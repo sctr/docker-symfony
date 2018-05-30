@@ -16,7 +16,7 @@ defaults: &defaults
           keys:
             - v1-{{ .Branch }}
           paths:
-            - /caches/app.tar
+            - /caches/app-$VERSION.tar
       - run:
           name: Load Docker image layer cache
           command: |

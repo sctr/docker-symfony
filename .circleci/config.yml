@@ -23,3 +23,11 @@ jobs:
     <<: *defaults
     environment:
       VERSION: 7.2
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - v7.0
+      - v7.1
+      - v7.2

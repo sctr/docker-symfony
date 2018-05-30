@@ -1,13 +1,51 @@
 defaults: &defaults
+  working_directory: /app
   docker:
-    - image: docker:17.03
+    - image: docker:17.05.0-ce-git
   steps:
       - checkout
-      - run: cp Dockerfile.template Dockerfile
-      - run: sed -i -e 's/<version>/$VERSION/g' Dockerfile
-      - run: docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
-      - run: docker build --pull -t sctr/docker-symfony:$VERSION .
-      - run: docker push sctr/docker-symfony:$VERSION
+      - run:
+          name: Preparing Dockerfile
+          command: |
+            cp Dockerfile.template Dockerfile
+            sed -i -e 's/<version>/$VERSION/g' Dockerfile
+      - setup_remote_docker
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --no-cache \
+              py-pip=9.0.0-r1
+            pip install \
+              docker-compose==1.12.0 \
+              awscli==1.11.76
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /caches/app.tar
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/app.tar | true
+      - run:
+          name: Build Docker Image
+          command: docker build --pull -t sctr/docker-symfony:$VERSION --cache-from=app-$VERSION .
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/app-$VERSION.tar app-$VERSION
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/app-$VERSION.tar
+      - deploy:
+          name: Push application Image
+          command: |
+            docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
+            docker tag sctr/docker-symfony:${CIRCLE_SHA1}
+            docker push sctr/docker-symfony:$VERSION
 
 version: 2
 jobs:

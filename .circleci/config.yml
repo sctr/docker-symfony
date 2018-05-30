@@ -7,6 +7,9 @@ defaults: &defaults
   steps:
       - checkout
       - run:
+          name: Setting Cache Key
+          command: echo "$VERSION" > .VERSION
+      - run:
           name: Preparing Dockerfile
           command: |
             cp Dockerfile.template Dockerfile
@@ -14,7 +17,7 @@ defaults: &defaults
       - setup_remote_docker
       - restore_cache:
           keys:
-            - v1-{{ .Environment.VERSION }}
+            - cache-{{ checksum ".VERSION" }}
           paths:
             - /caches/app.tar
       - run:
@@ -32,7 +35,7 @@ defaults: &defaults
             mkdir -p /caches
             docker save -o /caches/app.tar app
       - save_cache:
-          key: v1-{{ .Environment.VERSION }}
+          key: cache-{{ checksum ".VERSION" }}
           paths:
             - /caches/app.tar
       - deploy:

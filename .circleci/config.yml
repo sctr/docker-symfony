@@ -43,7 +43,8 @@ defaults: &defaults
           command: |
             docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
             docker tag app sctr/docker-symfony:$VERSION
-            docker tag app sctr/docker-symfony:${CIRCLE_SHA1}
+            if [[ "$LATEST" = "true" ]]; then docker tag app sctr/docker-symfony:${CIRCLE_SHA1}; fi
+            if [[ "$LATEST" = "true" ]]; then docker tag app sctr/docker-symfony:latest; fi
             docker push sctr/docker-symfony
 
 version: 2
@@ -60,6 +61,7 @@ jobs:
     <<: *defaults
     environment:
       VERSION: "7.2"
+      LATEST: "true"
 
 workflows:
   version: 2

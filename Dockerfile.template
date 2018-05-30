@@ -7,6 +7,7 @@ ARG DEVELOPMENT_PACKAGES="git zip autoconf g++ make"
 ARG PECL_PACKAGES="redis apcu"
 ARG EXT_PACKAGES="zip sockets"
 ARG DELETE_COMPOSER=true
+ARG COPY_FILES=""
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_NO_INTERACTION 1
@@ -24,6 +25,9 @@ RUN docker-php-ext-install $EXT_PACKAGES
 
 # Download composer
 RUN curl --silent --show-error https://getcomposer.org/installer | php
+
+WORKDIR $WORKDIR
+COPY composer.json composer.lock $COPY_FILES /app
 
 # Run composer
 RUN args="-o -n"; if [[ "$ENVIRONMENT" = "dev"]]; then args="-n"; fi \

@@ -36,10 +36,9 @@ RUN if [[ -f /app/composer.json ]]; then \
         && if [[ "$DELETE_COMPOSER" = "true" ]]; then rm composer.phar; fi \
     fi
 
-# Create, chmod, and chown the var dir
+# Create, and chmod the var dir
 RUN mkdir -p ./var/cache ./var/logs \
-    && chmod -R 2777 ./var \
-    && chown -R $USER ./var
+    && chmod -R 2777 ./var
 
 # Optimize Opcache in non-dev
 RUN if [[ "$ENVIRONMENT" != "dev" ]]; then printf "\nopcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini; fi

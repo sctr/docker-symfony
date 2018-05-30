@@ -43,8 +43,8 @@ defaults: &defaults
           command: |
             docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
             docker tag app sctr/docker-symfony:$VERSION
-            docker tag sctr/docker-symfony:$VERSION sctr/docker-symfony:${CIRCLE_SHA1}
-            docker push sctr/docker-symfony:$VERSION
+            docker tag app sctr/docker-symfony:${CIRCLE_SHA1}
+            docker push sctr/docker-symfony
 
 version: 2
 jobs:

@@ -3,8 +3,8 @@ defaults: &defaults
     - image: docker:17.03
   steps:
       - checkout
-      - cp Dockerfile.template Dockerfile
-      - sed -i -e 's/<version>/$VERSION/g' Dockerfile
+      - run: cp Dockerfile.template Dockerfile
+      - run: sed -i -e 's/<version>/$VERSION/g' Dockerfile
       - run: docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
       - run: docker build --pull -t sctr/docker-symfony:$VERSION .
       - run: docker push sctr/docker-symfony:$VERSION

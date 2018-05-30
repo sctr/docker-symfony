@@ -1,0 +1,26 @@
+defaults: &defaults
+  image: docker:17.03
+  services:
+    - docker:dind
+  steps:
+      - checkout
+      - cp Dockerfile.template Dockerfile
+      - sed -i -e 's/<version>/$VERSION/g' Dockerfile
+      - run: docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
+      - run: docker build --pull -t sctr/docker-symfony:$VERSION .
+      - run: docker push sctr/docker-symfony:$VERSION
+
+version: 2
+jobs:
+  v7.0:
+    <<: *defaults
+    environment:
+      VERSION: 7.0
+  v7.1:
+    <<: *defaults
+    environment:
+      VERSION: 7.1
+  v7.2:
+    <<: *defaults
+    environment:
+      VERSION: 7.2

@@ -1,0 +1,42 @@
+FROM php:<version>-alpine
+
+ARG ENVIRONMENT=prod
+ARG WORKDIR=/app
+ARG REQUIRED_PACKAGES=zlib zlib-dev curl
+ARG DEVELOPMENT_PACKAGES=git zip autoconf g++ make
+ARG PECL_PACKAGES=redis apcu
+ARG EXT_PACKAGES=zip sockets
+ARG DELETE_COMPOSER=true
+ARG USER=app-user
+
+ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV COMPOSER_NO_INTERACTION 1
+ENV COMPOSER_CACHE_DIR /tmp
+
+# Install Packages
+RUN apk add --update REQUIRED_PACKAGES DEVELOPMENT_PACKAGES
+
+# Install Pecl Packages
+RUN yes '' | pecl install -f PECL_PACKAGES
+RUN docker-php-ext-enable PECL_PACKAGES
+
+# Install Non-Pecl Packages
+RUN docker-php-ext-install EXT_PACKAGES
+
+USER $USER
+
+# Download composer
+RUN curl --silent --show-error https://getcomposer.org/installer | php
+
+# Run composer
+RUN args="-o -n"; if [[ "$ENVIRONMENT" = "dev"]]; then args="-n"; fi \
+    && ./composer.phar install $args
+    && if [[ "$DELETE_COMPOSER" = "true" ]]; then rm composer.phar; fi
+
+# Create, chmod, and chown the var dir
+RUN mkdir -p ./var/cache ./var/logs \
+    && chmod -R 2777 ./var \
+    && chown -R $USER ./var
+
+# Optimize Opcache in non-dev
+RUN if [[ "$ENVIRONMENT" != "dev" ]]; then printf "\nopcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini; fi

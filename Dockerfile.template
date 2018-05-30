@@ -44,4 +44,4 @@ RUN mkdir -p ./var/cache ./var/logs \
 RUN if [[ "$ENVIRONMENT" != "dev" ]]; then printf "\nopcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini; fi
 
 # Delete Non-Required Packages
-RUN apk remove $DEVELOPMENT_PACKAGES
+RUN apk del $DEVELOPMENT_PACKAGES

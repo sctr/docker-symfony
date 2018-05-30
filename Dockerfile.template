@@ -30,7 +30,7 @@ RUN curl --silent --show-error https://getcomposer.org/installer | php
 
 # Run composer
 RUN args="-o -n"; if [[ "$ENVIRONMENT" = "dev"]]; then args="-n"; fi \
-    && ./composer.phar install $args
+    && ./composer.phar install $args \
     && if [[ "$DELETE_COMPOSER" = "true" ]]; then rm composer.phar; fi
 
 # Create, chmod, and chown the var dir

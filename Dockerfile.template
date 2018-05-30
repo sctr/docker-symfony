@@ -17,7 +17,7 @@ ENV COMPOSER_CACHE_DIR /tmp
 RUN apk add --update $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
 
 # Install Pecl Packages
-RUN yes '' | pecl install -f PECL_PACKAGES
+RUN yes '' | pecl install -f $PECL_PACKAGES
 RUN docker-php-ext-enable $PECL_PACKAGES
 
 # Install Non-Pecl Packages

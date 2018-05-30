@@ -24,7 +24,7 @@ defaults: &defaults
             docker load -i /caches/app.tar | true
       - run:
           name: Build Docker Image
-          command: docker build --pull -t sctr/docker-symfony:$VERSION --cache-from=app-$VERSION --build-arg COPY_FILES="" .
+          command: docker build --pull -t sctr/docker-symfony:$VERSION --cache-from=sctr/docker-symfony:$VERSION --build-arg COPY_FILES="" .
       - run:
           name: Save Docker image layer cache
           command: |

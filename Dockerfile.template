@@ -14,14 +14,14 @@ ENV COMPOSER_NO_INTERACTION 1
 ENV COMPOSER_CACHE_DIR /tmp
 
 # Install Packages
-RUN apk add --update REQUIRED_PACKAGES DEVELOPMENT_PACKAGES
+RUN apk add --update $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
 
 # Install Pecl Packages
 RUN yes '' | pecl install -f PECL_PACKAGES
-RUN docker-php-ext-enable PECL_PACKAGES
+RUN docker-php-ext-enable $PECL_PACKAGES
 
 # Install Non-Pecl Packages
-RUN docker-php-ext-install EXT_PACKAGES
+RUN docker-php-ext-install $EXT_PACKAGES
 
 USER $USER
 
@@ -40,3 +40,6 @@ RUN mkdir -p ./var/cache ./var/logs \
 
 # Optimize Opcache in non-dev
 RUN if [[ "$ENVIRONMENT" != "dev" ]]; then printf "\nopcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini; fi
+
+# Delete Non-Required Packages
+RUN apk remove $DEVELOPMENT_PACKAGES

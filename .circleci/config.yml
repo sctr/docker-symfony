@@ -21,7 +21,7 @@ defaults: &defaults
           name: Load Docker image layer cache
           command: |
             set +o pipefail
-            docker load -i /caches/app.tar | true
+            docker load -i /caches/app-$VERSION.tar | true
       - run:
           name: Build Docker Image
           command: |
@@ -39,7 +39,7 @@ defaults: &defaults
           name: Push application Image
           command: |
             docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
-            docker tag sctr/docker-symfony:${CIRCLE_SHA1}
+            docker tag sctr/docker-symfony:$VERSION sctr/docker-symfony:${CIRCLE_SHA1}
             docker push sctr/docker-symfony:$VERSION
 
 version: 2

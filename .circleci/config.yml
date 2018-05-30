@@ -1,7 +1,8 @@
 defaults: &defaults
-  image: docker:17.03
-  services:
-    - docker:dind
+  docker:
+    image: docker:17.03
+    services:
+      - docker:dind
   steps:
       - checkout
       - cp Dockerfile.template Dockerfile

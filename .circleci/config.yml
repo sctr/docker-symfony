@@ -14,31 +14,32 @@ defaults: &defaults
       - setup_remote_docker
       - restore_cache:
           keys:
-            - v1-{{ .Branch }}
+            - v1-{{ .Environment.VERSION }}
           paths:
-            - /caches/app-$VERSION.tar
+            - /caches/app.tar
       - run:
           name: Load Docker image layer cache
           command: |
             set +o pipefail
-            docker load -i /caches/app-$VERSION.tar | true
+            docker load -i /caches/app.tar | true
       - run:
           name: Build Docker Image
           command: |
-            docker build --pull -t sctr/docker-symfony:$VERSION --cache-from=sctr/docker-symfony:$VERSION --build-arg COPY_FILES="" .
+            docker build --pull -t app --cache-from=app --build-arg COPY_FILES="" .
       - run:
           name: Save Docker image layer cache
           command: |
             mkdir -p /caches
-            docker save -o /caches/app-$VERSION.tar sctr/docker-symfony:$VERSION
+            docker save -o /caches/app.tar app
       - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
+          key: v1-{{ .Environment.VERSION }}
           paths:
-            - /caches/app-$VERSION.tar
+            - /caches/app.tar
       - deploy:
           name: Push application Image
           command: |
             docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
+            docker tag app sctr/docker-symfony:$VERSION
             docker tag sctr/docker-symfony:$VERSION sctr/docker-symfony:${CIRCLE_SHA1}
             docker push sctr/docker-symfony:$VERSION
 

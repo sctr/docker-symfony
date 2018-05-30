@@ -2,10 +2,10 @@ FROM php:<version>-alpine
 
 ARG ENVIRONMENT=prod
 ARG WORKDIR=/app
-ARG REQUIRED_PACKAGES=zlib zlib-dev curl
-ARG DEVELOPMENT_PACKAGES=git zip autoconf g++ make
-ARG PECL_PACKAGES=redis apcu
-ARG EXT_PACKAGES=zip sockets
+ARG REQUIRED_PACKAGES="zlib zlib-dev curl"
+ARG DEVELOPMENT_PACKAGES="git zip autoconf g++ make"
+ARG PECL_PACKAGES="redis apcu"
+ARG EXT_PACKAGES="zip sockets"
 ARG DELETE_COMPOSER=true
 ARG USER=app-user
 

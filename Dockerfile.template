@@ -7,7 +7,6 @@ ARG DEVELOPMENT_PACKAGES="git zip autoconf g++ make"
 ARG PECL_PACKAGES="redis apcu"
 ARG EXT_PACKAGES="zip sockets"
 ARG DELETE_COMPOSER=true
-ARG USER=app-user
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_NO_INTERACTION 1
@@ -22,8 +21,6 @@ RUN docker-php-ext-enable $PECL_PACKAGES
 
 # Install Non-Pecl Packages
 RUN docker-php-ext-install $EXT_PACKAGES
-
-USER $USER
 
 # Download composer
 RUN curl --silent --show-error https://getcomposer.org/installer | php

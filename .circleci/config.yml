@@ -2,6 +2,8 @@ defaults: &defaults
   working_directory: /app
   docker:
     - image: docker:17.05.0-ce-git
+      environment:
+        VERSION: "$VERSION"
   steps:
       - checkout
       - run:
@@ -52,15 +54,15 @@ jobs:
   v7.0:
     <<: *defaults
     environment:
-      VERSION: 7.0
+      VERSION: "7.0"
   v7.1:
     <<: *defaults
     environment:
-      VERSION: 7.1
+      VERSION: "7.1"
   v7.2:
     <<: *defaults
     environment:
-      VERSION: 7.2
+      VERSION: "7.2"
 
 workflows:
   version: 2

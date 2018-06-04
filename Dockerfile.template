@@ -60,6 +60,7 @@ RUN if [[ "$ENVIRONMENT" != "dev" ]]; then printf "\nopcache.validate_timestamps
 # Delete Non-Required Packages
 RUN apk del $DEVELOPMENT_PACKAGES
 
+# Copying manifest files to host
 COPY ./manifest /
 
 CMD /usr/bin/supervisord -n -c /etc/supervisord

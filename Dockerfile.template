@@ -28,7 +28,7 @@ RUN mkdir -p $GOPATH/src \
     && cd $GOPATH/src/github.com/mholt/caddy/caddy \
     && git checkout tags/v0.11.0 \
     && go run build.go -goos=linux -goarch=amd64 \
-    && mv caddy /usr/local/sbin/caddy \
+    && mv caddy /usr/local/sbin/caddy
 
 # Install Pecl Packages
 RUN yes '' | pecl install -f $PECL_PACKAGES

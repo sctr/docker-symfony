@@ -63,4 +63,4 @@ RUN apk del $DEVELOPMENT_PACKAGES
 # Copying manifest files to host
 COPY ./manifest /
 
-CMD /usr/bin/supervisord -n -c /etc/supervisord
+CMD /usr/bin/supervisord -n -c /etc/supervisord.conf

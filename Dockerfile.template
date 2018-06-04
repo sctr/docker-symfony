@@ -1,4 +1,4 @@
-FROM php:<version>-alpine
+FROM php:<version>-fpm-alpine
 
 ARG ENVIRONMENT=prod
 ARG WORKDIR=/app

@@ -2,8 +2,8 @@ FROM php:<version>-fpm-alpine
 
 ARG ENVIRONMENT=prod
 ARG WORKDIR=/app
-ARG REQUIRED_PACKAGES="zlib zlib-dev curl"
-ARG DEVELOPMENT_PACKAGES="git zip autoconf g++ make"
+ARG REQUIRED_PACKAGES="zlib zlib-dev curl supervisor pcre linux-headers "
+ARG DEVELOPMENT_PACKAGES="git zip autoconf g++ make openssh-client tar python py-pip pcre-dev"
 ARG PECL_PACKAGES="redis apcu"
 ARG EXT_PACKAGES="zip sockets"
 ARG DELETE_COMPOSER=true
@@ -12,9 +12,23 @@ ARG COPY_FILES="composer.json composer.lock"
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_NO_INTERACTION 1
 ENV COMPOSER_CACHE_DIR /tmp
+ENV GOPATH="/root/go"
 
 # Install Packages
-RUN apk add --update $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
+RUN apk add --update --no-cache --progress $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
+
+# Install Supervisor
+RUN pip install supervisor-stdout
+
+# Install Webserver
+RUN mkdir -p $GOPATH/src \
+    && cd $GOPATH/src \
+    && go get -u github.com/mholt/caddy \
+    && go get -u github.com/caddyserver/builds \
+    && cd $GOPATH/src/github.com/mholt/caddy/caddy \
+    && git checkout tags/v0.11.0 \
+    && go run build.go -goos=linux -goarch=amd64 \
+    && mv caddy /usr/local/sbin/caddy \
 
 # Install Pecl Packages
 RUN yes '' | pecl install -f $PECL_PACKAGES
@@ -45,3 +59,7 @@ RUN if [[ "$ENVIRONMENT" != "dev" ]]; then printf "\nopcache.validate_timestamps
 
 # Delete Non-Required Packages
 RUN apk del $DEVELOPMENT_PACKAGES
+
+COPY ./manifest /
+
+CMD /usr/bin/supervisord -n -c /etc/supervisord

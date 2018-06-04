@@ -1,0 +1,32 @@
+*:9001 {
+    root /app/public
+    log stdout
+    errors stdout
+
+    rewrite {
+        to {path} {path}/ /index.php?{query}
+    }
+
+    fastcgi / 127.0.0.1:9000 php
+
+    tls off
+    gzip
+}
+
+*:3001 {
+    root /app/public
+    log stdout
+    errors stdout
+
+    rewrite {
+        to {path} {path}/ /index.php?{query}
+    }
+
+    proxy / 127.0.0.1:3000 {
+        transparent
+        websocket
+    }
+
+    tls off
+    gzip
+}

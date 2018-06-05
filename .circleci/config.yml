@@ -9,11 +9,6 @@ defaults: &defaults
       - run:
           name: Setting Cache Key
           command: echo "$VERSION" > .VERSION
-      - run:
-          name: Preparing Dockerfile
-          command: |
-            cp Dockerfile.template Dockerfile
-            sed -i -e 's/<version>/'"$VERSION"'/g' Dockerfile
       - setup_remote_docker
       - restore_cache:
           keys:
@@ -28,7 +23,7 @@ defaults: &defaults
       - run:
           name: Build Docker Image
           command: |
-            docker build --pull -t app --cache-from=app --build-arg COPY_FILES="" .
+            docker build --pull -t app --cache-from=app --build-arg COPY_FILES="" --build-arg PHP_VERSION=$VERSION .
       - run:
           name: Save Docker image layer cache
           command: |

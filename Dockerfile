@@ -1,11 +1,12 @@
-FROM php:<version>-fpm-alpine
+ARG PHP_VERSION
+FROM php:$PHP_VERSION-fpm-alpine
 
 ARG ENVIRONMENT=prod
 ARG WORKDIR=/app
-ARG REQUIRED_PACKAGES="zlib zlib-dev curl supervisor pcre linux-headers go"
+ARG REQUIRED_PACKAGES="zlib zlib-dev curl supervisor pcre linux-headers go postgresql-dev mysql-dev"
 ARG DEVELOPMENT_PACKAGES="git zip autoconf g++ make openssh-client tar python py-pip pcre-dev"
 ARG PECL_PACKAGES="redis apcu"
-ARG EXT_PACKAGES="zip sockets"
+ARG EXT_PACKAGES="zip sockets pdo_pgsql pdo_mysql"
 ARG COPY_FILES="composer.json composer.lock"
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
@@ -46,7 +47,7 @@ COPY $COPY_FILES /app
 # Run composer
 RUN if [[ -f /app/composer.json ]]; then \
         args="-o -n"; if [[ "$ENVIRONMENT" = "dev"]]; then args="-n"; fi \
-        && composer install $args
+        && composer install $args \
     fi
 
 # Create, and chmod the var dir

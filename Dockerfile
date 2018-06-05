@@ -46,8 +46,8 @@ COPY $COPY_FILES /app
 
 # Run composer
 RUN if [[ -f /app/composer.json ]]; then \
-        args="-o -n"; if [[ "$ENVIRONMENT" = "dev"]]; then args="-n"; fi \
-        && composer install $args \
+        ([[ "$ENVIRONMENT" = "dev"]] && args="-n" || args="-o -n") \
+        && composer install $args; \
     fi
 
 # Create, and chmod the var dir

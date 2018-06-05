@@ -1,13 +1,13 @@
 FROM php:<version>-fpm-alpine
 
-ARG ENVIRONMENT=prod
-ARG WORKDIR=/app
-ARG REQUIRED_PACKAGES="zlib zlib-dev curl supervisor pcre linux-headers go"
-ARG DEVELOPMENT_PACKAGES="git zip autoconf g++ make openssh-client tar python py-pip pcre-dev"
-ARG PECL_PACKAGES="redis apcu"
-ARG EXT_PACKAGES="zip sockets"
-ARG DELETE_COMPOSER=true
-ARG COPY_FILES="composer.json composer.lock"
+ENV ENVIRONMENT=prod
+ENV WORKDIR=/app
+ENV REQUIRED_PACKAGES="zlib zlib-dev curl supervisor pcre linux-headers go"
+ENV DEVELOPMENT_PACKAGES="git zip autoconf g++ make openssh-client tar python py-pip pcre-dev"
+ENV PECL_PACKAGES="redis apcu"
+ENV EXT_PACKAGES="zip sockets"
+ENV DELETE_COMPOSER=true
+ENV COPY_FILES="composer.json composer.lock"
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_NO_INTERACTION 1

@@ -1,12 +1,12 @@
 FROM php:<version>-fpm-alpine
 
-ENV ENVIRONMENT=prod
-ENV WORKDIR=/app
+ENV ENVIRONMENT="prod"
+ENV WORKDIR="/app"
 ENV REQUIRED_PACKAGES="zlib zlib-dev curl supervisor pcre linux-headers go"
 ENV DEVELOPMENT_PACKAGES="git zip autoconf g++ make openssh-client tar python py-pip pcre-dev"
 ENV PECL_PACKAGES="redis apcu"
-ENV EXT_PACKAGES="zip sockets pdo_mysql pdo_pgsql"
-ENV DELETE_COMPOSER=true
+ENV EXT_PACKAGES="zip sockets"
+ENV DELETE_COMPOSER="true"
 
 ARG COPY_FILES="composer.json composer.lock"
 ENV COPY_FILES=$COPY_FILES

@@ -38,7 +38,8 @@ RUN docker-php-ext-enable $PECL_PACKAGES
 RUN docker-php-ext-install $EXT_PACKAGES
 
 # Download composer
-RUN curl --silent --show-error https://getcomposer.org/installer | php
+RUN curl --silent --show-error https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/bin/composer
 
 WORKDIR $WORKDIR
 COPY $COPY_FILES /app
@@ -46,8 +47,8 @@ COPY $COPY_FILES /app
 # Run composer
 RUN if [[ -f /app/composer.json ]]; then \
         args="-o -n"; if [[ "$ENVIRONMENT" = "dev"]]; then args="-n"; fi \
-        && ./composer.phar install $args \
-        && if [[ "$DELETE_COMPOSER" = "true" ]]; then rm composer.phar; fi \
+        && composer install $args \
+        && if [[ "$DELETE_COMPOSER" = "true" ]]; then rm /usr/bin/composer; fi \
     fi
 
 # Create, and chmod the var dir

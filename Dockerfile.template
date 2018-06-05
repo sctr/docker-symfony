@@ -7,7 +7,9 @@ ENV DEVELOPMENT_PACKAGES="git zip autoconf g++ make openssh-client tar python py
 ENV PECL_PACKAGES="redis apcu"
 ENV EXT_PACKAGES="zip sockets"
 ENV DELETE_COMPOSER=true
-ENV COPY_FILES="composer.json composer.lock"
+
+ARG COPY_FILES="composer.json composer.lock"
+ENV COPY_FILES=$COPY_FILES
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_NO_INTERACTION 1

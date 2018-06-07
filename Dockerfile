@@ -1,13 +1,11 @@
 ARG PHP_VERSION
 FROM php:$PHP_VERSION-fpm-alpine
 
-ARG ENVIRONMENT=prod
-ARG WORKDIR=/app
-ARG REQUIRED_PACKAGES="zlib zlib-dev curl supervisor pcre linux-headers go postgresql-dev mysql-dev"
-ARG DEVELOPMENT_PACKAGES="git zip autoconf g++ make openssh-client tar python py-pip pcre-dev"
-ARG PECL_PACKAGES="redis apcu"
-ARG EXT_PACKAGES="zip sockets pdo_pgsql pdo_mysql"
-ARG COPY_FILES="composer.json composer.lock"
+ENV ENVIRONMENT=prod
+ENV REQUIRED_PACKAGES="zlib zlib-dev curl supervisor pcre linux-headers go postgresql-dev mysql-dev"
+ENV DEVELOPMENT_PACKAGES="git zip autoconf g++ make openssh-client tar python py-pip pcre-dev"
+ENV PECL_PACKAGES="redis apcu"
+ENV EXT_PACKAGES="zip sockets pdo_pgsql pdo_mysql"
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_NO_INTERACTION 1
@@ -44,18 +42,9 @@ RUN curl --silent --show-error https://getcomposer.org/installer | php \
 WORKDIR $WORKDIR
 COPY $COPY_FILES /app
 
-# Run composer
-RUN if [[ -f /app/composer.json ]]; then \
-        ([[ "$ENVIRONMENT" = "dev"]] && args="-n" || args="-o -n") \
-        && composer install $args; \
-    fi
-
 # Create, and chmod the var dir
 RUN mkdir -p ./var/cache ./var/logs \
     && chmod -R 2777 ./var
-
-# Optimize Opcache in non-dev
-RUN if [[ "$ENVIRONMENT" != "dev" ]]; then printf "\nopcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini; fi
 
 # Delete Non-Required Packages
 RUN apk del $DEVELOPMENT_PACKAGES

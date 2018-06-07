@@ -39,11 +39,10 @@ RUN docker-php-ext-install $EXT_PACKAGES
 RUN curl --silent --show-error https://getcomposer.org/installer | php \
     && mv composer.phar /usr/bin/composer
 
-WORKDIR $WORKDIR
-COPY $COPY_FILES /app
+WORKDIR /app
 
 # Create, and chmod the var dir
-RUN mkdir -p ./var/cache ./var/logs \
+RUN mkdir -p ./var/cache ./var/log \
     && chmod -R 2777 ./var
 
 # Delete Non-Required Packages

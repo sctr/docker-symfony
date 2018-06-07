@@ -2,8 +2,8 @@ ARG PHP_VERSION
 FROM php:$PHP_VERSION-fpm-alpine
 
 ENV ENVIRONMENT=prod
-ENV REQUIRED_PACKAGES="zlib zlib-dev curl supervisor pcre linux-headers go postgresql-dev mysql-dev"
-ENV DEVELOPMENT_PACKAGES="git zip autoconf g++ make openssh-client tar python py-pip pcre-dev"
+ENV REQUIRED_PACKAGES="git zip zlib zlib-dev curl supervisor pcre linux-headers go postgresql-dev mysql-dev"
+ENV DEVELOPMENT_PACKAGES="autoconf g++ make openssh-client tar python py-pip pcre-dev"
 ENV PECL_PACKAGES="redis apcu"
 ENV EXT_PACKAGES="zip sockets pdo_pgsql pdo_mysql"
 

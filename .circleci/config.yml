@@ -56,6 +56,10 @@ jobs:
     <<: *defaults
     environment:
       VERSION: "7.2"
+  v7.3:
+    <<: *defaults
+    environment:
+      VERSION: "7.3"
       LATEST: "true"
 
 workflows:
@@ -67,4 +71,6 @@ workflows:
       - v7.1:
           context: org-global
       - v7.2:
+          context: org-global
+      - v7.3:
           context: org-global

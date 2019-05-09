@@ -18,12 +18,9 @@ RUN curl --silent --show-error --fail --location \
 # -----------------------------------------------------
 # App Itself
 # -----------------------------------------------------
-
 FROM php:$PHP_VERSION-fpm-alpine
 
-ARG LOCAL_VM=true
-ARG ENVIRONMENT=development
-
+ENV ENVIRONMENT=dev
 
 ENV REQUIRED_PACKAGES="zlib-dev libzip-dev zip curl supervisor pcre linux-headers mysql-dev rabbitmq-c php7-amqp"
 ENV DEVELOPMENT_PACKAGES="git autoconf g++ make openssh-client tar python py-pip pcre-dev rabbitmq-c-dev icu-dev icu-dev gettext-dev"
@@ -83,8 +80,3 @@ RUN mkdir -p ./var/cache ./var/log \
 
 # Delete Non-Required Packages
 RUN apk del $DEVELOPMENT_PACKAGES
-
-# Xdebug
-RUN if [[ "$LOCAL_VM" == "true" ]]; then apk add --no-cache $PHPIZE_DEPS \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug; fi

@@ -1,14 +1,14 @@
 version: 2.1
 orbs:
-    docker-publish: circleci/docker-publish@0.1.7
+    docker: circleci/docker@0.1.0
 workflows:
     build_and_publish_docker_image:
         jobs:
-            - docker-publish/publish
+            - docker/publish:
                 image: sctr/docker-symfony
                 tag: 7.3
                 extra_build_args: '--build-arg VERSION=7.3'
-            - docker-publish/publish
+            - docker/publish:
                 image: sctr/docker-symfony
                 tag: latest
                 extra_build_args: '--build-arg VERSION=7.3'

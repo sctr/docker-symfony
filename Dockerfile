@@ -26,7 +26,6 @@ ENV PECL_PACKAGES="redis amqp apcu"
 ENV EXT_PACKAGES="zip sockets pdo_mysql pdo_pgsql bcmath opcache mbstring iconv gettext intl exif"
 
 ENV DOCKER=true
-ENV LOCAL_VM=$LOCAL_VM
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_NO_INTERACTION 1
 ENV COMPOSER_CACHE_DIR /tmp

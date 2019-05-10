@@ -22,10 +22,10 @@ FROM php:$PHP_VERSION-fpm-alpine
 
 ENV ENVIRONMENT=dev
 
-ENV REQUIRED_PACKAGES="zlib-dev libzip-dev zip curl supervisor pcre linux-headers mysql-dev rabbitmq-c php7-amqp"
-ENV DEVELOPMENT_PACKAGES="git autoconf g++ make openssh-client tar python py-pip pcre-dev rabbitmq-c-dev icu-dev icu-dev gettext-dev"
+ENV REQUIRED_PACKAGES="zlib-dev libzip-dev zip curl supervisor pcre linux-headers gettext-dev mysql-dev postgresql-dev rabbitmq-c php7-amqp icu"
+ENV DEVELOPMENT_PACKAGES="git autoconf g++ make openssh-client tar python py-pip pcre-dev rabbitmq-c-dev icu-dev"
 ENV PECL_PACKAGES="redis amqp apcu"
-ENV EXT_PACKAGES="zip sockets pdo_mysql bcmath opcache mbstring iconv gettext intl exif"
+ENV EXT_PACKAGES="zip sockets pdo_mysql pdo_pgsql bcmath opcache mbstring iconv gettext intl exif"
 
 ENV DOCKER=true
 ENV LOCAL_VM=$LOCAL_VM

@@ -60,10 +60,6 @@ RUN curl --silent --show-error https://getcomposer.org/installer | php \
 RUN mkdir -p ./var/cache/$ENVIRONMENT ./var/log \
     && chmod -R 2777 ./var
 
-# Add private packagist config
-RUN composer config --global --auth http-basic.repo.packagist.com token 9eb7001be6187904bf5a84a9b0143043bc1881bc0d1b6caf2ad2d98bc41b \
-    && composer config -g github-oauth.github.com f4058f934da3775382a34501abefebf7b7b0084e
-
 # Optimize Opcache in non-dev
 RUN if [[ "$ENVIRONMENT" != "dev" && "$ENVIRONMENT" != "development" ]]; then printf "\nopcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini; fi
 
@@ -73,6 +69,3 @@ RUN apk del $DEVELOPMENT_PACKAGES
 # Create, and chmod the var dir
 RUN mkdir -p ./var/cache ./var/log \
     && chmod -R 2777 ./var
-
-# Delete Non-Required Packages
-RUN apk del $DEVELOPMENT_PACKAGES

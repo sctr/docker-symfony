@@ -67,10 +67,6 @@ RUN composer config --global --auth http-basic.repo.packagist.com token 9eb7001b
 # Optimize Opcache in non-dev
 RUN if [[ "$ENVIRONMENT" != "dev" && "$ENVIRONMENT" != "development" ]]; then printf "\nopcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini; fi
 
-# Run composer
-RUN composer install -n
-RUN if [[ "$ENVIRONMENT" != "dev" && "$ENVIRONMENT" != "development"  ]]; then composer dump-autoload --optimize --no-dev --classmap-authoritative; fi
-
 # Delete Non-Required Packages
 RUN apk del $DEVELOPMENT_PACKAGES
 

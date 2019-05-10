@@ -1,3 +1,4 @@
+# https://circleci.com/orbs/registry/orb/circleci/docker
 version: 2.1
 orbs:
     docker: circleci/docker@0.1.0
@@ -7,16 +8,16 @@ workflows:
             - docker/publish:
                 image: sctr/docker-symfony
                 tag: "7.1"
-                extra_build_args: '--build-arg VERSION=7.1'
+                extra_build_args: '--build-arg PHP_VERSION=7.1'
             - docker/publish:
                 image: sctr/docker-symfony
                 tag: "7.2"
-                extra_build_args: '--build-arg VERSION=7.2'
+                extra_build_args: '--build-arg PHP_VERSION=7.2'
             - docker/publish:
                 image: sctr/docker-symfony
                 tag: "7.3"
-                extra_build_args: '--build-arg VERSION=7.3'
+                extra_build_args: '--build-arg PHP_VERSION=7.3'
             - docker/publish:
                 image: sctr/docker-symfony
                 tag: latest
-                extra_build_args: '--build-arg VERSION=7.3'
+                extra_build_args: '--build-arg PHP_VERSION=7.3'

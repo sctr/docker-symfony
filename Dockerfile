@@ -20,8 +20,6 @@ RUN curl --silent --show-error --fail --location \
 # -----------------------------------------------------
 FROM php:$PHP_VERSION-fpm-alpine
 
-ENV ENVIRONMENT=dev
-
 ENV REQUIRED_PACKAGES="zlib-dev libzip-dev zip curl supervisor pcre linux-headers gettext-dev mysql-dev postgresql-dev rabbitmq-c php7-amqp icu"
 ENV DEVELOPMENT_PACKAGES="git autoconf g++ make openssh-client tar python py-pip pcre-dev rabbitmq-c-dev icu-dev"
 ENV PECL_PACKAGES="redis amqp apcu"
@@ -56,16 +54,5 @@ RUN docker-php-ext-install $EXT_PACKAGES
 RUN curl --silent --show-error https://getcomposer.org/installer | php \
     && mv composer.phar /usr/bin/composer
 
-# Create, and chmod the var dir
-RUN mkdir -p ./var/cache/$ENVIRONMENT ./var/log \
-    && chmod -R 2777 ./var
-
-# Optimize Opcache in non-dev
-RUN if [[ "$ENVIRONMENT" != "dev" && "$ENVIRONMENT" != "development" ]]; then printf "\nopcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini; fi
-
 # Delete Non-Required Packages
 RUN apk del $DEVELOPMENT_PACKAGES
-
-# Create, and chmod the var dir
-RUN mkdir -p ./var/cache ./var/log \
-    && chmod -R 2777 ./var

@@ -1,4 +1,4 @@
-*:{$PORT}} *:80 {
+*:{$PORT} *:80 {
     root /app/{$PUBLIC_DIR}
 
     log / stdout "\"{method} {uri}\" => {status} ({size})" {

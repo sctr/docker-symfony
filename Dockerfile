@@ -6,9 +6,11 @@ ARG PHP_VERSION
 FROM alpine as caddy
 
 ARG plugins=http.git,http.cache,http.expires,http.minify,http.realip
+ARG PORT=9001
+ARG PUBLIC_DIR=public
 
-ENV PORT=9001
-ENV PUBLIC_DIR=public
+ENV PORT=$PORT
+ENV PUBLIC_DIR=$PUBLIC_DIR
 
 RUN apk --update add git curl linux-headers
 

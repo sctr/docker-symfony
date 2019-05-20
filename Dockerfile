@@ -6,11 +6,6 @@ ARG PHP_VERSION
 FROM alpine as caddy
 
 ARG plugins=http.git,http.cache,http.expires,http.minify,http.realip
-ARG PORT=9001
-ARG PUBLIC_DIR=public
-
-ENV PORT=$PORT
-ENV PUBLIC_DIR=$PUBLIC_DIR
 
 RUN apk --update add git curl linux-headers
 
@@ -24,6 +19,12 @@ RUN curl --silent --show-error --fail --location \
 # App Itself
 # -----------------------------------------------------
 FROM php:$PHP_VERSION-fpm-alpine
+
+ARG PORT=9001
+ARG PUBLIC_DIR=public
+
+ENV PORT=$PORT
+ENV PUBLIC_DIR=$PUBLIC_DIR
 
 ENV REQUIRED_PACKAGES="zlib-dev libzip-dev zip curl supervisor pcre linux-headers gettext-dev mysql-dev postgresql-dev rabbitmq-c php7-amqp icu"
 ENV DEVELOPMENT_PACKAGES="git autoconf g++ make openssh-client tar python py-pip pcre-dev rabbitmq-c-dev icu-dev"

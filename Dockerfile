@@ -7,6 +7,9 @@ FROM alpine as caddy
 
 ARG plugins=http.git,http.cache,http.expires,http.minify,http.realip
 
+ENV PORT=9001
+ENV PUBLIC_DIR=public
+
 RUN apk --update add git curl linux-headers
 
 RUN curl --silent --show-error --fail --location \

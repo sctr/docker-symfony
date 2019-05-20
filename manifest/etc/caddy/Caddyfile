@@ -1,6 +1,6 @@
-*:9001 *:80 {
-    root /app/public
-    
+*:{$PORT}} *:80 {
+    root /app/{$PUBLIC_DIR}
+
     log / stdout "\"{method} {uri}\" => {status} ({size})" {
         ipmask 255.255.0.0 ffff:ffff:ffff:ff00::
         except /$

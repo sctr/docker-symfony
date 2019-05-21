@@ -59,5 +59,8 @@ RUN docker-php-ext-install $EXT_PACKAGES
 RUN curl --silent --show-error https://getcomposer.org/installer | php \
     && mv composer.phar /usr/bin/composer
 
+# Install Parallel Composer Plugin
+RUN composer global require hirak/prestissimo --no-plugins --no-scripts
+
 # Delete Non-Required Packages
 RUN apk del $DEVELOPMENT_PACKAGES

@@ -45,6 +45,9 @@ COPY --from=caddy /tmp/caddy /usr/local/sbin/caddy
 # Install Packages
 RUN apk add --update --no-cache $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
 
+# Update ulimit
+RUN ulimit -n 16384
+
 # Install Supervisor
 RUN pip install supervisor-stdout
 

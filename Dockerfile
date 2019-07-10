@@ -43,7 +43,7 @@ COPY ./manifest /
 COPY --from=caddy /tmp/caddy /usr/local/sbin/caddy
 
 # Hide decorators
-RUN if [ "$PHP_VERSION" >= 7.3 ] ; then echo "decorate_workers_output = no" >> /usr/local/etc/php-fpm.d/docker.conf ; fi
+RUN if [ "$PHP_VERSION" = "7.3" ] ; then echo "decorate_workers_output = no" >> /usr/local/etc/php-fpm.d/docker.conf ; fi
 
 # Install Packages
 RUN apk add --update --no-cache $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES

@@ -44,7 +44,7 @@ COPY ./manifest /
 COPY --from=caddy /tmp/caddy /usr/local/sbin/caddy
 
 # Hide decorators - only available for PHP 7.3 and above
-RUN if [[ -z "$DECORATE_WORKERS" ]] then \
+RUN if [[ -z "$DECORATE_WORKERS" ]]; then \
     echo "decorate_workers_output = no" >> /usr/local/etc/php-fpm.d/docker.conf; fi
 
 # Install Packages

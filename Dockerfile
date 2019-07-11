@@ -22,8 +22,8 @@ FROM php:$PHP_VERSION-fpm-alpine
 
 ARG PORT=9001
 ARG PUBLIC_DIR=public
+ARG DECORATE_WORKERS
 
-ENV PHP_VERSION=$PHP_VERSION
 ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
 
@@ -43,8 +43,8 @@ WORKDIR /app
 COPY ./manifest /
 COPY --from=caddy /tmp/caddy /usr/local/sbin/caddy
 
-# Hide decorators
-RUN if [[ "$PHP_VERSION" = "7.3" ]]; then \
+# Hide decorators - only available for PHP 7.3 and above
+RUN if [[ -z "$DECORATE_WORKERS" ]] then \
     echo "decorate_workers_output = no" >> /usr/local/etc/php-fpm.d/docker.conf; fi
 
 # Install Packages

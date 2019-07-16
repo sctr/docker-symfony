@@ -56,6 +56,10 @@ RUN ulimit -n 16384
 # Install Supervisor
 RUN pip install supervisor-stdout
 
+# Fix Iconv
+RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted gnu-libiconv
+ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
+
 # Install Pecl Packages
 RUN yes '' | pecl install -f $PECL_PACKAGES
 RUN docker-php-ext-enable $PECL_PACKAGES

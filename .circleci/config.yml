@@ -5,10 +5,10 @@ orbs:
 workflows:
     build_and_publish_docker_image:
         jobs:
-            - docker/publish:
-                image: sctr/docker-symfony
-                tag: "7.1"
-                extra_build_args: '--build-arg PHP_VERSION=7.1 --build-arg DECORATE_WORKERS=yes'
+#            - docker/publish:
+#                image: sctr/docker-symfony
+#                tag: "7.1"
+#                extra_build_args: '--build-arg PHP_VERSION=7.1 --build-arg DECORATE_WORKERS=yes'
             - docker/publish:
                 image: sctr/docker-symfony
                 tag: "7.2"

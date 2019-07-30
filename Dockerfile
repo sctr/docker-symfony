@@ -1,4 +1,4 @@
-ARG PHP_VERSION
+ARG PHP_VERSION=7.3
 
 # -----------------------------------------------------
 # Caddy Install
@@ -41,7 +41,12 @@ WORKDIR /app
 
 # Copying manifest files to host
 COPY ./manifest /
+
+# Caddy
 COPY --from=caddy /tmp/caddy /usr/local/sbin/caddy
+
+# Composer install
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Hide decorators - only available for PHP 7.3 and above
 RUN if [[ -z "$DECORATE_WORKERS" ]]; then \
@@ -66,10 +71,6 @@ RUN docker-php-ext-enable $PECL_PACKAGES
 
 # Install Non-Pecl Packages
 RUN docker-php-ext-install $EXT_PACKAGES
-
-# Download composer
-RUN curl --silent --show-error https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/bin/composer
 
 # Install Parallel Composer Plugin
 RUN composer global require hirak/prestissimo --no-plugins --no-scripts

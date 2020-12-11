@@ -1,19 +1,14 @@
 ARG PHP_VERSION=7.4
+ARG CADDY_VERSION=2
 
 # -----------------------------------------------------
 # Caddy Install
 # -----------------------------------------------------
-FROM alpine as caddy
+FROM caddy:$CADDY_VERSION-builder AS builder
 
-ARG plugins=http.git,http.cache,http.expires,http.minify,http.realip
+RUN xcaddy build
 
-RUN apk --update add git curl linux-headers
-
-RUN curl --silent --show-error --fail --location \
-      --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
-      "https://caddyserver.com/download/linux/amd64?plugins=${plugins}&license=personal&telemetry=off" \
-    | tar --no-same-owner -C /tmp -xz caddy \
-    && chmod 0755 /tmp/caddy
+FROM caddy:$CADDY_VERSION
 
 # -----------------------------------------------------
 # App Itself
@@ -45,7 +40,7 @@ COPY ./manifest /
 COPY --from=caddy /tmp/caddy /usr/local/sbin/caddy
 
 # Composer install
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install Packages
 RUN apk add --update --no-cache $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
@@ -66,9 +61,6 @@ RUN docker-php-ext-enable $PECL_PACKAGES
 
 # Install Non-Pecl Packages
 RUN docker-php-ext-install $EXT_PACKAGES
-
-# Install Parallel Composer Plugin
-RUN composer global require hirak/prestissimo --no-plugins --no-scripts
 
 # Delete Non-Required Packages
 RUN apk del $DEVELOPMENT_PACKAGES

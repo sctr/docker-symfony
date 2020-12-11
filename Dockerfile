@@ -37,7 +37,7 @@ WORKDIR /app
 COPY ./manifest /
 
 # Caddy
-COPY --from=caddy /tmp/caddy /usr/local/sbin/caddy
+COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
 
 # Composer install
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

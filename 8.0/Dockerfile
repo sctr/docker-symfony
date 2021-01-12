@@ -34,9 +34,6 @@ ENV COMPOSER_CACHE_DIR /tmp
 
 WORKDIR /app
 
-COPY --from=ext-amqp /usr/local/etc/php/conf.d/docker-php-ext-amqp.ini /usr/local/etc/php/conf.d/docker-php-ext-amqp.ini
-COPY --from=ext-amqp /usr/local/lib/php/extensions/no-debug-non-zts-20200930/amqp.so /usr/local/lib/php/extensions/no-debug-non-zts-20200930/amqp.so
-
 # Copying manifest files to host
 COPY ./8.0/manifest /
 

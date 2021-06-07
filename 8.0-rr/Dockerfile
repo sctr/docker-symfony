@@ -18,11 +18,11 @@ ARG PUBLIC_DIR=public
 ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
 
-ENV REQUIRED_PACKAGES="git make zlib-dev libzip-dev zip curl supervisor python3 ca-certificates pcre linux-headers gettext-dev mysql-dev postgresql-dev rabbitmq-c icu libsodium-dev oniguruma-dev libjpeg-turbo-dev freetype-dev libpng-dev libwebp libwebp-dev libpng freetype libjpeg-turbo jpegoptim optipng pngquant gifsicle"
+ENV REQUIRED_PACKAGES="git make zlib-dev libzip-dev zip curl supervisor python3 ca-certificates pcre linux-headers gettext-dev mysql-dev postgresql-dev rabbitmq-c icu libsodium-dev oniguruma-dev libjpeg-turbo-dev freetype-dev libpng-dev libwebp libwebp-dev libpng freetype libjpeg-turbo jpegoptim optipng pngquant gifsicle imagemagick-dev imagemagick"
 ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar py-pip pcre-dev rabbitmq-c-dev icu-dev"
 ENV PICKLE_PACKAGES="amqp apcu ast"
 ENV PECL_PACKAGES="redis mongodb"
-ENV EXT_PACKAGES="zip sockets pdo_mysql pdo_pgsql bcmath opcache mbstring iconv gettext intl exif sodium gd pcntl"
+ENV EXT_PACKAGES="zip sockets pdo_mysql pdo_pgsql bcmath opcache mbstring iconv gettext intl exif sodium gd pcntl sysvmsg sysvsem sysvshm"
 
 ENV DOCKER=true
 ENV COMPOSER_ALLOW_SUPERUSER 1
@@ -61,6 +61,13 @@ RUN apk add --no-cache $PHPIZE_DEPS && wget https://github.com/FriendsOfPHP/pick
 RUN for package in $PICKLE_PACKAGES; do pickle install $package --defaults; done
 RUN yes '' | pecl install -f $PECL_PACKAGES
 RUN docker-php-ext-enable $PICKLE_PACKAGES $PECL_PACKAGES
+
+# Imagick from master @TODO upgrade to release version when php8 support is ready
+RUN docker-php-source extract \
+    && mkdir /usr/src/php/ext/imagick \
+    && curl -L https://github.com/Imagick/imagick/archive/master.tar.gz | tar -xzC /usr/src/php/ext/imagick --strip-components=1 \
+    && docker-php-ext-install imagick \
+    && docker-php-source delete
 
 # MaxMind
 RUN apk add --no-cache libmaxminddb \

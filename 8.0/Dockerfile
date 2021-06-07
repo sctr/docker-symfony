@@ -21,9 +21,9 @@ ARG PUBLIC_DIR=public
 ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
 
-ENV REQUIRED_PACKAGES="git make zlib-dev libzip-dev zip curl supervisor pcre linux-headers gettext-dev mysql-dev postgresql-dev rabbitmq-c icu libsodium-dev oniguruma-dev libjpeg-turbo-dev freetype-dev libpng-dev libwebp libwebp-dev libpng freetype libjpeg-turbo imagemagick-dev imagemagick"
-ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar python3 py-pip pcre-dev rabbitmq-c-dev icu-dev"
-ENV PICKLE_PACKAGES="apcu ast"
+ENV REQUIRED_PACKAGES="git make zlib-dev libzip-dev zip curl supervisor pcre linux-headers gettext-dev mysql-dev postgresql-dev rabbitmq-c icu libsodium-dev oniguruma-dev libjpeg-turbo-dev freetype-dev libpng-dev libwebp libwebp-dev libpng freetype libjpeg-turbo "
+ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar python3 py-pip pcre-dev rabbitmq-c-dev icu-dev"imagemagick-dev imagemagick
+ENV PICKLE_PACKAGES="amqp apcu ast"
 ENV PECL_PACKAGES="redis mongodb"
 ENV EXT_PACKAGES="zip sockets pdo_mysql pdo_pgsql bcmath opcache mbstring iconv gettext intl exif sodium gd sysvmsg sysvsem sysvshm"
 
@@ -65,21 +65,26 @@ RUN for package in $PICKLE_PACKAGES; do pickle install $package --defaults; done
 RUN yes '' | pecl install -f $PECL_PACKAGES
 RUN docker-php-ext-enable $PICKLE_PACKAGES $PECL_PACKAGES
 
-# AMQP from master @TODO upgrade to release version when php8 support is ready
-ENV EXT_AMQP_VERSION=master
-RUN docker-php-source extract \
-    && apk -Uu add git rabbitmq-c-dev \
-    && git clone --branch $EXT_AMQP_VERSION --depth 1 https://github.com/php-amqp/php-amqp.git /usr/src/php/ext/amqp \
-    && cd /usr/src/php/ext/amqp && git submodule update --init \
-    && docker-php-ext-install amqp \
-    && docker-php-source delete
-
 # Imagick from master @TODO upgrade to release version when php8 support is ready
 RUN docker-php-source extract \
     && mkdir /usr/src/php/ext/imagick \
     && curl -L https://github.com/Imagick/imagick/archive/master.tar.gz | tar -xzC /usr/src/php/ext/imagick --strip-components=1 \
     && docker-php-ext-install imagick \
     && docker-php-source delete
+
+# MaxMind
+RUN apk add --no-cache libmaxminddb \
+    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS git libmaxminddb-dev \
+    && git clone https://github.com/maxmind/MaxMind-DB-Reader-php.git \
+    && ( \
+      cd MaxMind-DB-Reader-php/ext \
+      && phpize \
+      && ./configure \
+      && make \
+      && make install \
+    ) \
+    && rm -r MaxMind-DB-Reader-php \
+    && docker-php-ext-enable maxminddb
 
 # Delete Non-Required Packages
 RUN apk del $DEVELOPMENT_PACKAGES

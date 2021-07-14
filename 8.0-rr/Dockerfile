@@ -10,7 +10,7 @@ FROM ${RR_IMAGE} as rr
 # -----------------------------------------------------
 # App Itself
 # -----------------------------------------------------
-FROM php:${PHP_VERSION}-cli-alpine
+FROM php:${PHP_VERSION}-cli-alpine3.13
 
 ARG PORT=9001
 ARG PUBLIC_DIR=public
@@ -48,7 +48,7 @@ RUN ulimit -n 16384
 
 # Fix Iconv
 RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted gnu-libiconv
-ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
+ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so
 
 # Configure GD to use freetype fonts
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg

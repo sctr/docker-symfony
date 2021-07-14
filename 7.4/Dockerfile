@@ -13,7 +13,7 @@ FROM caddy:$CADDY_VERSION
 # -----------------------------------------------------
 # App Itself
 # -----------------------------------------------------
-FROM php:$PHP_VERSION-fpm-alpine
+FROM php:$PHP_VERSION-fpm-alpine3.13
 
 ARG PORT=9001
 ARG PUBLIC_DIR=public

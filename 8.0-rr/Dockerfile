@@ -3,6 +3,11 @@ ARG RR_VERSION=2.6.0
 ARG RR_IMAGE=spiralscout/roadrunner:${RR_VERSION}
 
 # -----------------------------------------------------
+# Roadrunner
+# -----------------------------------------------------
+FROM ${RR_IMAGE} as rr
+
+# -----------------------------------------------------
 # App Itself
 # -----------------------------------------------------
 FROM php:${PHP_VERSION}-cli-alpine
@@ -30,7 +35,7 @@ WORKDIR /app
 COPY ./8.0-rr/manifest /
 
 # Copy RoadRunner
-COPY --from=${RR_IMAGE} /usr/bin/rr /usr/bin/rr
+COPY --from=rr /usr/bin/rr /usr/bin/rr
 
 # Copy Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

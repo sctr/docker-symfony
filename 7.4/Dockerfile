@@ -56,8 +56,8 @@ RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/co
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 
 # Install Pecl Packages
-RUN yes '' | pecl install -f $PECL_PACKAGES
-RUN docker-php-ext-enable $PECL_PACKAGES
+RUN yes '' | pecl install -f $PECL_PACKAGES; \
+    docker-php-ext-enable $PECL_PACKAGES
 
 # Install Non-Pecl Packages
 RUN docker-php-ext-install $EXT_PACKAGES

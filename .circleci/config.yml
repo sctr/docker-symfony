@@ -1,27 +1,150 @@
-# https://circleci.com/orbs/registry/orb/circleci/docker
 version: 2.1
+
 orbs:
-  docker: circleci/docker@0.5.18
+  docker: circleci/docker@2.0.1
+
+jobs:
+  build-amd64:
+    parameters:
+      image:
+        description: Name of image to build
+        default: "sctr/docker-symfony"
+        type: string
+      path:
+        default: .
+        description: |
+          Path to the directory containing your Dockerfile, defaults to . (working directory)
+        type: string
+      tag:
+        default: $CIRCLE_SHA1
+        description: Image tag, defaults to the value of $CIRCLE_SHA1
+        type: string
+      extra_build_args:
+        default: ""
+        description: |
+          Extra flags to pass to docker build. For examples, see https://docs.docker.com/engine/reference/commandline/build
+        type: string
+    executor: docker/docker
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.7
+      - docker/check
+      - docker/build:
+          image: << parameters.image >>
+          path: << parameters.path >>
+          tag: << parameters.tag >>-amd64
+          extra_build_args: << parameters.extra_build_args >>
+      - docker/push:
+          image: << parameters.image >>
+          tag: << parameters.tag >>-amd64
+
+  build-arm64:
+    parameters:
+      image:
+        description: Name of image to build
+        default: "sctr/docker-symfony"
+        type: string
+      path:
+        default: .
+        description: |
+          Path to the directory containing your Dockerfile, defaults to . (working directory)
+        type: string
+      tag:
+        default: $CIRCLE_SHA1
+        description: Image tag, defaults to the value of $CIRCLE_SHA1
+        type: string
+      extra_build_args:
+        default: ""
+        description: |
+          Extra flags to pass to docker build. For examples, see https://docs.docker.com/engine/reference/commandline/build
+        type: string
+    machine:
+      image: ubuntu-2004:202101-01
+    resource_class: arm.medium
+    steps:
+      - checkout
+      - run:
+          name: Install Docker
+          command: |
+            sudo apt-get remove docker docker-engine docker.io containerd runc
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+            sudo add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+            sudo apt-get update
+            sudo apt-get install docker-ce docker-ce-cli containerd.io
+            docker --version
+      - docker/check
+      - docker/build:
+          image: << parameters.image >>
+          path: << parameters.path >>
+          tag: << parameters.tag >>-arm64
+          extra_build_args: << parameters.extra_build_args >>
+      - docker/push:
+          image: << parameters.image >>
+          tag: << parameters.tag >>-arm64
+
+  push-multiarch-image:
+    parameters:
+      image:
+        type: string
+    docker:
+      - image: docker:latest
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.7
+      - run:
+          name: Configure Docker Hub
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
+      - run:
+          name: Create and push manifest for multiarch
+          command: |
+            docker manifest create << parameters.image >> \
+            --amend << parameters.image >>-arm64 \
+            --amend << parameters.image >>-amd64
+            docker manifest push << parameters.image >>
+
 workflows:
-  build_and_publish_docker_image:
+
+  build-publish-74:
     jobs:
-      - docker/publish:
-          image: sctr/docker-symfony
+      - build-amd64:
+          path: "7.4"
           tag: "7.4"
-          dockerfile: "7.4/Dockerfile"
-          extra_build_args: '--build-arg PHP_VERSION=7.4'
-      - docker/publish:
-          image: sctr/docker-symfony
+      - build-arm64:
+          path: "7.4"
+          tag: "7.4"
+      - push-multiarch-image:
+          image: "sctr/docker-symfony:7.4"
+          requires:
+            - build-arm64
+            - build-amd64
+
+  build-publish-80:
+    jobs:
+      - build-amd64:
+          path: "8.0"
           tag: "8.0"
-          dockerfile: "8.0/Dockerfile"
-          extra_build_args: '--build-arg PHP_VERSION=8.0'
-      - docker/publish:
-          image: sctr/docker-symfony
+      - build-arm64:
+          path: "8.0"
+          tag: "8.0"
+      - push-multiarch-image:
+          image: "sctr/docker-symfony:8.0"
+          requires:
+            - build-arm64
+            - build-amd64
+
+  build-publish-80-rr:
+    jobs:
+      - build-amd64:
+          path: "8.0-rr"
           tag: "8.0-rr"
-          dockerfile: "8.0-rr/Dockerfile"
-          extra_build_args: '--build-arg PHP_VERSION=8.0'
-      - docker/publish:
-          image: sctr/docker-symfony
-          tag: latest
-          dockerfile: "7.4/Dockerfile"
-          extra_build_args: '--build-arg PHP_VERSION=7.4'
+      - build-arm64:
+          path: "8.0-rr"
+          tag: "8.0-rr"
+      - push-multiarch-image:
+          image: "sctr/docker-symfony:8.0-rr"
+          requires:
+            - build-arm64
+            - build-amd64

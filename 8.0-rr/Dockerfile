@@ -66,7 +66,7 @@ RUN docker-php-source extract \
     && git clone --branch $EXT_AMQP_VERSION --depth 1 https://github.com/php-amqp/php-amqp.git /usr/src/php/ext/amqp \
     && cd /usr/src/php/ext/amqp && git submodule update --init \
     && docker-php-ext-install amqp \
-    && docker-php-source delete \
+    && docker-php-source delete
 
 # Imagick from master @TODO upgrade to release version when php8 support is ready
 ENV EXT_IMAGICK_VERSION=master

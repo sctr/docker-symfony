@@ -107,19 +107,19 @@ jobs:
 
 workflows:
 
-  build-publish-74:
-    jobs:
-      - build-amd64:
-          path: "7.4"
-          tag: "7.4"
-      - build-arm64:
-          path: "7.4"
-          tag: "7.4"
-      - push-multiarch-image:
-          image: "sctr/docker-symfony:7.4"
-          requires:
-            - build-arm64
-            - build-amd64
+#  build-publish-74:
+#    jobs:
+#      - build-amd64:
+#          path: "7.4"
+#          tag: "7.4"
+#      - build-arm64:
+#          path: "7.4"
+#          tag: "7.4"
+#      - push-multiarch-image:
+#          image: "sctr/docker-symfony:7.4"
+#          requires:
+#            - build-arm64
+#            - build-amd64
 
   build-publish-80:
     jobs:

@@ -135,6 +135,20 @@ workflows:
             - build-arm64
             - build-amd64
 
+  build-publish-81:
+    jobs:
+      - build-amd64:
+          path: "8.1"
+          tag: "8.1"
+      - build-arm64:
+          path: "8.1"
+          tag: "8.1"
+      - push-multiarch-image:
+          image: "sctr/docker-symfony:8.1"
+          requires:
+            - build-arm64
+            - build-amd64
+
   build-publish-80-rr:
     jobs:
       - build-amd64:

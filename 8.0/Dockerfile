@@ -26,7 +26,7 @@ ENV PUBLIC_DIR=$PUBLIC_DIR
 ENV REQUIRED_PACKAGES="git make gnu-libiconv zlib-dev libzip-dev zip curl supervisor pcre linux-headers gettext-dev mysql-dev postgresql-dev rabbitmq-c icu libsodium-dev oniguruma-dev imagemagick libjpeg-turbo-dev freetype-dev libpng-dev libwebp libwebp-dev libpng freetype libjpeg-turbo libmaxminddb"
 ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar python3 py-pip pcre-dev rabbitmq-c-dev icu-dev imagemagick-dev libmaxminddb-dev"
 ENV PECL_PACKAGES="redis apcu ast mongodb maxminddb"
-ENV EXT_PACKAGES="zip sockets pdo_mysql pdo_pgsql bcmath opcache mbstring iconv gettext intl exif sodium gd sysvmsg sysvsem sysvshm pcntl"
+ENV EXT_PACKAGES="zip sockets pdo_mysql pdo_pgsql bcmath opcache mbstring gettext intl exif sodium gd sysvmsg sysvsem sysvshm pcntl"
 
 ENV DOCKER=true
 ENV COMPOSER_ALLOW_SUPERUSER 1
@@ -49,10 +49,6 @@ RUN apk add --update --no-cache $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
 
 # Update ulimit
 RUN ulimit -n 16384
-
-## Fix Iconv
-#RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted gnu-libiconv=1.15-r3
-#ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 
 # Configure GD to use freetype fonts
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp

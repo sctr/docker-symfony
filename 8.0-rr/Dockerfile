@@ -46,7 +46,7 @@ RUN apk add --update --no-cache $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
 RUN ulimit -n 16384
 
 # Fix Iconv
-RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted gnu-libiconv
+RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted gnu-libiconv=1.15-r3
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so
 
 # Configure GD to use freetype fonts

@@ -26,7 +26,7 @@ ENV PUBLIC_DIR=$PUBLIC_DIR
 ENV REQUIRED_PACKAGES="git make zlib-dev libzip-dev zip curl supervisor pcre linux-headers gettext-dev mysql-dev postgresql-dev rabbitmq-c icu libsodium-dev oniguruma-dev imagemagick libjpeg-turbo-dev freetype-dev libpng-dev libwebp libwebp-dev libpng freetype libjpeg-turbo libmaxminddb"
 ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar python3 py-pip pcre-dev rabbitmq-c-dev icu-dev imagemagick-dev libmaxminddb-dev"
 ENV PECL_PACKAGES="redis apcu ast mongodb maxminddb"
-ENV EXT_PACKAGES="pdo_mysql pdo_pgsql bcmath opcache mbstring iconv gettext intl exif sodium gd sysvmsg sysvsem sysvshm pcntl"
+ENV EXT_PACKAGES="pdo_mysql pdo_pgsql bcmath opcache mbstring gettext intl exif sodium gd sysvmsg sysvsem sysvshm pcntl"
 
 ENV DOCKER=true
 ENV COMPOSER_ALLOW_SUPERUSER 1

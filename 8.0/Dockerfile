@@ -23,15 +23,13 @@ ARG PUBLIC_DIR=public
 ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
 
-ENV REQUIRED_PACKAGES="git make gnu-libiconv zlib-dev libzip-dev zip curl supervisor pcre linux-headers gettext-dev mysql-dev postgresql-dev rabbitmq-c icu libsodium-dev oniguruma-dev imagemagick libjpeg-turbo-dev freetype-dev libpng-dev libwebp libwebp-dev libpng freetype libjpeg-turbo libmaxminddb"
-ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar python3 py-pip pcre-dev rabbitmq-c-dev icu-dev imagemagick-dev libmaxminddb-dev"
+ENV REQUIRED_PACKAGES="git make gnu-libiconv zip curl supervisor pcre linux-headers rabbitmq-c imagemagick libwebp libpng freetype libjpeg-turbo libmaxminddb"
+ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar python3 py-pip pcre-dev rabbitmq-c-dev icu-data-full icu-dev imagemagick-dev libmaxminddb-dev zlib-dev libzip-dev gettext-dev mysql-dev postgresql-dev libsodium-dev oniguruma-dev libjpeg-turbo-dev freetype-dev libpng-dev libwebp-dev"
 ENV PECL_PACKAGES="redis apcu ast mongodb maxminddb"
 ENV EXT_PACKAGES="zip sockets pdo_mysql pdo_pgsql bcmath opcache mbstring gettext intl exif sodium gd sysvmsg sysvsem sysvshm pcntl"
 
 ENV DOCKER=true
-ENV COMPOSER_ALLOW_SUPERUSER 1
-ENV COMPOSER_NO_INTERACTION 1
-ENV COMPOSER_CACHE_DIR /tmp
+ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tmp"
 
 WORKDIR /app
 
@@ -45,7 +43,7 @@ COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install Packages
-RUN apk add --update --no-cache $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
+RUN apk add --update --no-cache $PHPIZE_DEPS $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
 
 # Update ulimit
 RUN ulimit -n 16384
@@ -54,7 +52,7 @@ RUN ulimit -n 16384
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp
 
 # Install Non-Pecl Packages
-RUN docker-php-ext-install $EXT_PACKAGES
+RUN docker-php-ext-install -j$(nproc) $EXT_PACKAGES
 
 # Install Pecl Packages
 RUN yes '' | pecl install -f $PECL_PACKAGES; \
@@ -63,10 +61,9 @@ RUN yes '' | pecl install -f $PECL_PACKAGES; \
 # AMQP from master @TODO upgrade to release version when php8 support is ready
 ENV EXT_AMQP_VERSION=master
 RUN docker-php-source extract \
-    && apk -Uu add git rabbitmq-c-dev \
     && git clone --branch $EXT_AMQP_VERSION --depth 1 https://github.com/php-amqp/php-amqp.git /usr/src/php/ext/amqp \
     && cd /usr/src/php/ext/amqp && git submodule update --init \
-    && docker-php-ext-install amqp \
+    && docker-php-ext-install -j$(nproc) amqp \
     && docker-php-source delete
 
 # Imagick from master @TODO upgrade to release version when php8 support is ready
@@ -74,8 +71,8 @@ ENV EXT_IMAGICK_VERSION=master
 RUN docker-php-source extract \
     && git clone --branch $EXT_IMAGICK_VERSION --depth 1 https://github.com/Imagick/imagick.git /usr/src/php/ext/imagick \
     && cd /usr/src/php/ext/imagick && git submodule update --init \
-    && docker-php-ext-install imagick \
+    && docker-php-ext-install -j$(nproc) imagick \
     && docker-php-source delete
 
 # Delete Non-Required Packages
-RUN apk del $DEVELOPMENT_PACKAGES
+RUN apk del $PHPIZE_DEPS $DEVELOPMENT_PACKAGES

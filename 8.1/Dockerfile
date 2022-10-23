@@ -23,7 +23,7 @@ ARG PUBLIC_DIR=public
 ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
 
-ENV REQUIRED_PACKAGES="git make zip curl supervisor pcre linux-headers rabbitmq-c imagemagick libavif libwebp libpng freetype libjpeg-turbo libmaxminddb"
+ENV REQUIRED_PACKAGES="git make zip curl supervisor pcre linux-headers imagemagick libavif libwebp libpng freetype libjpeg-turbo"
 ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar python3 py-pip pcre-dev zlib-dev libzip-dev rabbitmq-c-dev icu-dev icu-data-full imagemagick-dev libmaxminddb-dev libsodium-dev oniguruma-dev libavif-dev libjpeg-turbo-dev freetype-dev libpng-dev libwebp-dev gettext-dev mysql-dev postgresql-dev"
 ENV PECL_PACKAGES="redis apcu ast mongodb maxminddb"
 ENV EXT_PACKAGES="pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sodium gd sysvmsg sysvsem sysvshm pcntl"
@@ -42,8 +42,11 @@ COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
 # Composer install
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install Packages
-RUN apk add --update --no-cache $PHPIZE_DEPS $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
+# Install required packages
+RUN apk add --update --no-cache $REQUIRED_PACKAGES
+
+# Install development packages
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS $DEVELOPMENT_PACKAGES
 
 # Fix Iconv
 RUN apk add --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted gnu-libiconv
@@ -63,6 +66,7 @@ RUN CFLAGS="$CFLAGS -D_GNU_SOURCE" docker-php-ext-install sockets && docker-php-
 
 # Install Pecl Packages
 RUN yes '' | pecl install -f $PECL_PACKAGES; \
+    pecl clear-cache; \
     docker-php-ext-enable $PECL_PACKAGES
 
 # AMQP from master @TODO upgrade to release version when php8 support is ready
@@ -84,4 +88,4 @@ RUN docker-php-source extract \
     && docker-php-source delete \
 
 # Delete Non-Required Packages
-RUN apk del $PHPIZE_DEPS $DEVELOPMENT_PACKAGES
+RUN apk del .build-deps

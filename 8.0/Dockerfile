@@ -23,8 +23,8 @@ ARG PUBLIC_DIR=public
 ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
 
-ENV REQUIRED_PACKAGES="git make gnu-libiconv zip curl supervisor pcre linux-headers imagemagick libwebp libpng freetype libjpeg-turbo"
-ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar python3 py-pip pcre-dev rabbitmq-c-dev icu-data-full icu-dev imagemagick-dev libmaxminddb-dev zlib-dev libzip-dev gettext-dev mysql-dev postgresql-dev libsodium-dev oniguruma-dev libjpeg-turbo-dev freetype-dev libpng-dev libwebp-dev"
+ENV REQUIRED_PACKAGES="git make gnu-libiconv zip curl supervisor pcre imagemagick libwebp libpng freetype libjpeg-turbo"
+ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client linux-headers tar python3 py-pip pcre-dev rabbitmq-c-dev icu-data-full icu-dev imagemagick-dev libmaxminddb-dev zlib-dev libzip-dev gettext-dev mysql-dev postgresql-dev libsodium-dev oniguruma-dev libjpeg-turbo-dev freetype-dev libpng-dev libwebp-dev"
 ENV PECL_PACKAGES="redis apcu ast mongodb maxminddb"
 ENV EXT_PACKAGES="zip sockets pdo_mysql pdo_pgsql bcmath opcache mbstring gettext intl exif sodium gd sysvmsg sysvsem sysvshm pcntl"
 

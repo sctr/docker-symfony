@@ -23,7 +23,7 @@ ARG PUBLIC_DIR=public
 ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
 
-ENV REQUIRED_PACKAGES="git make zip curl supervisor pcre imagemagick libavif libwebp libpng freetype libjpeg-turbo"
+ENV REQUIRED_PACKAGES="git make zip curl supervisor pcre imagemagick libavif libwebp libpng freetype libjpeg-turbo libmaxminddb rabbitmq-c"
 ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar linux-headers python3 py-pip pcre-dev zlib-dev libzip-dev rabbitmq-c-dev icu-dev icu-data-full imagemagick-dev libmaxminddb-dev libsodium-dev oniguruma-dev libavif-dev libjpeg-turbo-dev freetype-dev libpng-dev libwebp-dev gettext-dev mysql-dev postgresql-dev"
 ENV PECL_PACKAGES="redis apcu ast mongodb maxminddb"
 ENV EXT_PACKAGES="pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sodium gd sysvmsg sysvsem sysvshm pcntl"
@@ -87,5 +87,12 @@ RUN docker-php-source extract \
     && docker-php-ext-enable imagick \
     && docker-php-source delete \
 
-# Delete Non-Required Packages
-RUN apk del .build-deps
+# PHP run deps cleanup
+RUN runDeps="$( \
+        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
+            | tr ',' '\n' \
+            | sort -u \
+            | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+    )"; \
+    apk add --no-cache --virtual .app-phpexts-rundeps $runDeps; \
+    apk del .build-deps

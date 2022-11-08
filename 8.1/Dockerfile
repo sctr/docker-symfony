@@ -26,7 +26,7 @@ ENV PUBLIC_DIR=$PUBLIC_DIR
 ENV REQUIRED_PACKAGES="git make zip libzip-dev curl supervisor pcre imagemagick libavif libwebp libpng freetype libjpeg-turbo libmaxminddb rabbitmq-c gmp"
 ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar linux-headers python3 py-pip postgresql-dev pcre-dev zlib-dev rabbitmq-c-dev icu-dev icu-data-full imagemagick-dev libmaxminddb-dev libsodium-dev oniguruma-dev libavif-dev libjpeg-turbo-dev freetype-dev libpng-dev libwebp-dev gettext-dev mysql-dev postgresql-dev gmp-dev libxslt-dev"
 ENV PECL_PACKAGES="redis apcu ast mongodb maxminddb"
-ENV EXT_PACKAGES="zip pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sodium gd sysvmsg sysvsem sysvshm pcntl gmp xsl"
+ENV EXT_PACKAGES="pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sodium gd sysvmsg sysvsem sysvshm pcntl gmp xsl"
 
 ENV DOCKER=true
 ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tmp"
@@ -47,6 +47,9 @@ RUN apk add --update --no-cache $REQUIRED_PACKAGES
 
 # Install development packages
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS $DEVELOPMENT_PACKAGES
+
+# Install Zip extension
+RUN docker-php-ext-configure zip && docker-php-ext-install zip && docker-php-ext-enable zip
 
 # Fix Iconv
 RUN apk add --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted gnu-libiconv

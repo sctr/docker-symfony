@@ -38,7 +38,7 @@ COPY ./8.1/manifest /
 COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
 
 # Composer install
-COPY --from=composer/composer:2-bin --link /composer /usr/bin/composer
+COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 
 # php extensions installer: https://github.com/mlocati/docker-php-extension-installer
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/

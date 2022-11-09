@@ -24,7 +24,7 @@ ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
 
 ENV REQUIRED_PACKAGES="git make zip curl supervisor pcre python3 libpq libxslt imagemagick libavif libwebp libpng freetype libjpeg-turbo rabbitmq-c"
-ENV EXTENSIONS="redis apcu ast mongodb maxminddb amqp pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sysvmsg sysvsem sysvshm pcntl gmp xsl imagick bz2"
+ENV EXTENSIONS="redis apcu ast mongodb maxminddb amqp pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sysvmsg sysvsem sysvshm pcntl gmp xsl imagick bz2 gd igbinary"
 
 ENV DOCKER=true
 ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tmp"

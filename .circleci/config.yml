@@ -107,7 +107,7 @@ jobs:
       - run:
           name: Configure Docker Hub
           command: |
-            docker login --username $DOCKER_USERNAME -p $DOCKER_TOKEN
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
       - run:
           name: Create and push manifest for multiarch
           command: |

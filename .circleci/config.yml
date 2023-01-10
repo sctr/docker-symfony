@@ -151,9 +151,11 @@ workflows:
       - build-amd64:
           path: "8.1"
           tag: "8.1"
+          extra_build_args: '--no-cache'
       - build-arm64:
           path: "8.1"
           tag: "8.1"
+          extra_build_args: '--no-cache'
       - push-multiarch-image:
           image: "sctr/docker-symfony:8.1"
           requires:
@@ -165,9 +167,11 @@ workflows:
       - build-amd64:
           path: "8.2"
           tag: "8.2"
+          extra_build_args: '--no-cache'
       - build-arm64:
           path: "8.2"
           tag: "8.2"
+          extra_build_args: '--no-cache'
       - push-multiarch-image:
           image: "sctr/docker-symfony:8.2"
           requires:

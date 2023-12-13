@@ -117,37 +117,6 @@ jobs:
             docker manifest push << parameters.image >>
 
 workflows:
-
-  build-publish-80:
-    jobs:
-      - build-amd64:
-          path: "8.0"
-          tag: "8.0"
-      - build-arm64:
-          path: "8.0"
-          tag: "8.0"
-      - push-multiarch-image:
-          image: "sctr/docker-symfony:8.0"
-          requires:
-            - build-arm64
-            - build-amd64
-
-  build-publish-81:
-    jobs:
-      - build-amd64:
-          path: "8.1"
-          tag: "8.1"
-          extra_build_args: '--no-cache'
-      - build-arm64:
-          path: "8.1"
-          tag: "8.1"
-          extra_build_args: '--no-cache'
-      - push-multiarch-image:
-          image: "sctr/docker-symfony:8.1"
-          requires:
-            - build-arm64
-            - build-amd64
-
   build-publish-82:
     jobs:
       - build-amd64:
@@ -160,6 +129,22 @@ workflows:
           extra_build_args: '--no-cache'
       - push-multiarch-image:
           image: "sctr/docker-symfony:8.2"
+          requires:
+            - build-arm64
+            - build-amd64
+
+  build-publish-83:
+    jobs:
+      - build-amd64:
+          path: "8.3"
+          tag: "8.3"
+          extra_build_args: '--no-cache'
+      - build-arm64:
+          path: "8.3"
+          tag: "8.3"
+          extra_build_args: '--no-cache'
+      - push-multiarch-image:
+          image: "sctr/docker-symfony:8.3"
           requires:
             - build-arm64
             - build-amd64

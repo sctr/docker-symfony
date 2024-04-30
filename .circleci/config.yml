@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  docker: circleci/docker@2.2.0
+  docker: circleci/docker@2.6.0
 
 jobs:
   build-amd64:
@@ -103,7 +103,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.7
+          version: 20.10.12
       - run:
           name: Configure Docker Hub
           command: |
@@ -148,17 +148,3 @@ workflows:
           requires:
             - build-arm64
             - build-amd64
-
-#  build-publish-80-rr:
-#    jobs:
-#      - build-amd64:
-#          path: "8.0-rr"
-#          tag: "8.0-rr"
-#      - build-arm64:
-#          path: "8.0-rr"
-#          tag: "8.0-rr"
-#      - push-multiarch-image:
-#          image: "sctr/docker-symfony:8.0-rr"
-#          requires:
-#            - build-arm64
-#            - build-amd64

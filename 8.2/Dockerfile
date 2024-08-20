@@ -15,7 +15,7 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH xcaddy build
 # -----------------------------------------------------
 # App Itself
 # -----------------------------------------------------
-FROM php:$PHP_VERSION-fpm-alpine
+FROM php:$PHP_VERSION-fpm
 
 ARG PORT=9001
 ARG PUBLIC_DIR=public
@@ -23,7 +23,7 @@ ARG PUBLIC_DIR=public
 ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
 
-ENV REQUIRED_PACKAGES="git make zip curl supervisor linux-headers gettext acl fcgi pcre python3 libpq libxslt imagemagick libavif libwebp libpng freetype libjpeg-turbo rabbitmq-c"
+ENV REQUIRED_PACKAGES="git zip curl supervisor gettext acl python3 imagemagick"
 ENV EXTENSIONS="redis apcu ast zip mongodb maxminddb amqp pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sysvmsg sysvsem sysvshm pcntl gmp xsl imagick bz2 gd igbinary uuid"
 
 ENV DOCKER=true
@@ -45,14 +45,10 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 RUN chmod +x /usr/local/bin/install-php-extensions
 
 # Install required packages
-RUN apk add --update --no-cache $REQUIRED_PACKAGES
+RUN apt update && apt install -y $REQUIRED_PACKAGES
 
 # Install PHP extensions
 RUN install-php-extensions $EXTENSIONS
-
-# Fix Iconv
-RUN apk add --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted gnu-libiconv
-ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 
 # Install sockets
 RUN CFLAGS="$CFLAGS -D_GNU_SOURCE" docker-php-ext-install sockets && docker-php-ext-enable sockets

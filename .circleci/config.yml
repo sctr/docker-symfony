@@ -133,6 +133,22 @@ workflows:
             - build-arm64
             - build-amd64
 
+  build-publish-82-debian:
+    jobs:
+      - build-amd64:
+          path: "8.2-debian"
+          tag: "8.2-debian"
+          extra_build_args: '--no-cache'
+      - build-arm64:
+          path: "8.2-debian"
+          tag: "8.2-debian"
+          extra_build_args: '--no-cache'
+      - push-multiarch-image:
+          image: "sctr/docker-symfony:8.2-debian"
+          requires:
+            - build-arm64
+            - build-amd64
+
   build-publish-83:
     jobs:
       - build-amd64:

@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  docker: circleci/docker@2.6.0
+  docker: circleci/docker@2.8.1
 
 jobs:
   build-amd64:
@@ -162,6 +162,22 @@ workflows:
           extra_build_args: '--no-cache'
       - push-multiarch-image:
           image: "sctr/docker-symfony:8.3"
+          requires:
+            - build-arm64
+            - build-amd64
+
+  build-publish-84:
+    jobs:
+      - build-amd64:
+          path: "8.4"
+          tag: "8.4"
+          extra_build_args: '--no-cache'
+      - build-arm64:
+          path: "8.4"
+          tag: "8.4"
+          extra_build_args: '--no-cache'
+      - push-multiarch-image:
+          image: "sctr/docker-symfony:8.4"
           requires:
             - build-arm64
             - build-amd64

@@ -25,7 +25,7 @@ jobs:
           Extra flags to pass to docker build. For examples, see https://docs.docker.com/engine/reference/commandline/build
         type: string
     machine:
-      image: ubuntu-2204:current
+      image: ubuntu-2004:current
       docker_layer_caching: true
     resource_class: large
     steps:
@@ -70,7 +70,7 @@ jobs:
           Extra flags to pass to docker build. For examples, see https://docs.docker.com/engine/reference/commandline/build
         type: string
     machine:
-      image: ubuntu-2204:current
+      image: ubuntu-2004:current
       docker_layer_caching: true
     resource_class: arm.large
     steps:

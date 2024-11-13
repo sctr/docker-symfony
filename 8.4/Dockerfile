@@ -44,7 +44,7 @@ COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 # Install required packages
-RUN apk add --update --no-cache $REQUIRED_PACKAGES
+RUN apk add --update --no-cache $REQUIRED_PACKAGES && rm -rf /var/cache/apk/*
 
 # Install PHP extensions
 RUN IPE_ICU_EN_ONLY=1 install-php-extensions $EXTENSIONS

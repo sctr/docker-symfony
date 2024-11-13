@@ -1,7 +1,7 @@
 # Alpine-Caddy-FPM
 
-A specialized box containing:
+Docker images for PHP with Symfony
 
-* Alpine: 3.9
-* PHP:    7.(1|2|3)-rc-fpm-alpine
-* Caddy:  v1.0.0
+### Useful links
+* https://github.com/mvorisek/image-php/tree/master
+

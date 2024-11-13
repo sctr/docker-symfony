@@ -23,8 +23,8 @@ ARG PUBLIC_DIR=public
 ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
 
-ENV REQUIRED_PACKAGES="git make zip curl supervisor linux-headers gettext acl fcgi pcre python3 libpq gcc libxslt imagemagick imagemagick-pdf libavif libwebp libpng freetype libjpeg-turbo rabbitmq-c"
-ENV EXTENSIONS="redis apcu ast zip mongodb maxminddb amqp pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sysvmsg sysvsem sysvshm pcntl gmp xsl imagick/imagick@master bz2 gd igbinary uuid"
+ENV REQUIRED_PACKAGES="git make unzip curl supervisor linux-headers gettext acl fcgi pcre python3 gcc libxslt gnupg imagemagick imagemagick-pdf libavif libwebp libpng freetype libjpeg-turbo rabbitmq-c ca-certificates coreutils"
+ENV EXTENSIONS="redis apcu ast zip mongodb maxminddb amqp pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sysvmsg sysvsem sysvshm pcntl gmp xsl Imagick/imagick@65e27f2bc0 bz2 gd igbinary uuid sockets"
 
 ENV DOCKER=true
 ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tmp"
@@ -44,13 +44,10 @@ COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 # Install required packages
-RUN apk add --update --no-cache $REQUIRED_PACKAGES
+RUN apk add --update --no-cache $REQUIRED_PACKAGES && rm -rf /var/cache/apk/*
 
 # Install PHP extensions
 RUN install-php-extensions $EXTENSIONS
-
-# Install sockets
-RUN CFLAGS="$CFLAGS -D_GNU_SOURCE" docker-php-ext-install sockets && docker-php-ext-enable sockets
 
 # Update ulimit
 RUN ulimit -n 16384

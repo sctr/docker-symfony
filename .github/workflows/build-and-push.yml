@@ -42,8 +42,6 @@ jobs:
             - name: Build and Push Docker Image
               run: |
                   docker build \
-                    --cache-from type=local,src=/tmp/.docker-cache \
-                    --cache-to type=local,dest=/tmp/.docker-cache \
                     -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64 .
                   docker push ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64
 
@@ -81,8 +79,6 @@ jobs:
             - name: Build and Push Docker Image
               run: |
                   docker build \
-                    --cache-from type=local,src=/tmp/.docker-cache \
-                    --cache-to type=local,dest=/tmp/.docker-cache \
                     -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64 .
                   docker push ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64
 

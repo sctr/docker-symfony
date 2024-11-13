@@ -30,7 +30,8 @@ jobs:
             - name: Build and Push Docker Image
               run: |
                   docker build \
-                    -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64 ./${{ matrix.phpversion }}
+                    -f ${{ matrix.phpversion }}/Dockerfile \
+                    -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64 .
                   docker push ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64
 
     build-and-push-arm64:
@@ -55,7 +56,8 @@ jobs:
             - name: Build and Push Docker Image
               run: |
                   docker build \
-                    -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64 ./${{ matrix.phpversion }}
+                    -f ${{ matrix.phpversion }}/Dockerfile \
+                    -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64 .
                   docker push ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64
 
     create-multiarch-manifests:

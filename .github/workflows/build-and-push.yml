@@ -42,9 +42,9 @@ jobs:
               uses: docker/build-push-action@v6
               with:
                   context: .
-                  push: true
                   tags: ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64
                   file: ./${{ matrix.phpversion }}/Dockerfile
+                  platforms: linux/amd64
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
 
@@ -79,9 +79,9 @@ jobs:
               uses: docker/build-push-action@v6
               with:
                   context: .
-                  push: true
                   tags: ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64
                   file: ./${{ matrix.phpversion }}/Dockerfile
+                  platforms: linux/arm64
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
 
@@ -110,5 +110,5 @@ jobs:
                     docker manifest create \
                       ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }} \
                       --amend ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64 \
-                      --amend sctr/docker-symfony:${{ matrix.phpversion }}-arm64
+                      --amend ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64
                     docker manifest push sctr/docker-symfony:${{ matrix.phpversion }}

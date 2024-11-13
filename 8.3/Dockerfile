@@ -40,9 +40,8 @@ COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
 # Composer install
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 
-# php extensions installer: https://github.com/mlocati/docker-php-extension-installer
-ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
-RUN chmod +x /usr/local/bin/install-php-extensions
+# PHP extensions installer
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 # Install required packages
 RUN apk add --update --no-cache $REQUIRED_PACKAGES

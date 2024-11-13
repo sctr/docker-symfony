@@ -4,7 +4,7 @@ ARG CADDY_VERSION=2
 # -----------------------------------------------------
 # Caddy Install
 # -----------------------------------------------------
-FROM caddy:$CADDY_VERSION-builder AS builder
+FROM caddy:$CADDY_VERSION-builder-alpine AS builder
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG TARGETOS
@@ -23,8 +23,8 @@ ARG PUBLIC_DIR=public
 ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
 
-ENV REQUIRED_PACKAGES="git make zip curl supervisor linux-headers gettext acl fcgi pcre python3 libpq gcc libxslt imagemagick imagemagick-pdf libavif libwebp libpng freetype libjpeg-turbo rabbitmq-c"
-ENV EXTENSIONS="redis apcu ast zip mongodb maxminddb amqp pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sysvmsg sysvsem sysvshm pcntl gmp xsl imagick/imagick@master bz2 gd igbinary uuid"
+ENV REQUIRED_PACKAGES="git make unzip curl supervisor linux-headers gettext acl fcgi pcre python3 gcc libxslt gnupg imagemagick imagemagick-pdf libavif libwebp libpng freetype libjpeg-turbo rabbitmq-c ca-certificates coreutils"
+ENV EXTENSIONS="redis apcu ast zip mongodb maxminddb amqp pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sysvmsg sysvsem sysvshm pcntl gmp xsl bz2 gd igbinary uuid sockets Imagick/imagick@65e27f2bc0"
 
 ENV DOCKER=true
 ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tmp"
@@ -40,18 +40,14 @@ COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
 # Composer install
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 
-# php extensions installer: https://github.com/mlocati/docker-php-extension-installer
-ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
-RUN chmod +x /usr/local/bin/install-php-extensions
+# PHP extensions installer
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 # Install required packages
 RUN apk add --update --no-cache $REQUIRED_PACKAGES
 
 # Install PHP extensions
-RUN install-php-extensions $EXTENSIONS
-
-# Install sockets
-RUN CFLAGS="$CFLAGS -D_GNU_SOURCE" docker-php-ext-install sockets && docker-php-ext-enable sockets
+RUN IPE_ICU_EN_ONLY=1 install-php-extensions $EXTENSIONS
 
 # Update ulimit
 RUN ulimit -n 16384

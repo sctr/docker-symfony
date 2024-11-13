@@ -14,7 +14,7 @@ jobs:
             matrix:
                 phpversion:
                     - 8.3
-#                    - 8.4
+                    - 8.4
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -29,6 +29,7 @@ jobs:
 
             - name: Build and Push Docker Image
               run: |
+                  docker pull ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64 || true
                   docker build \
                     -f ${{ matrix.phpversion }}/Dockerfile \
                     -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64 .
@@ -40,7 +41,7 @@ jobs:
             matrix:
                 phpversion:
                     - 8.3
-#                    - 8.4
+                    - 8.4
         runs-on: ubuntu-latest-arm64
         steps:
             - name: Checkout
@@ -55,6 +56,7 @@ jobs:
 
             - name: Build and Push Docker Image
               run: |
+                  docker pull ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64 || true
                   docker build \
                     -f ${{ matrix.phpversion }}/Dockerfile \
                     -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64 .
@@ -67,7 +69,7 @@ jobs:
             matrix:
                 phpversion:
                     - 8.3
-#                    - 8.4
+                    - 8.4
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -86,4 +88,4 @@ jobs:
                       ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }} \
                       --amend ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64 \
                       --amend ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64
-                    docker manifest push sctr/docker-symfony:${{ matrix.phpversion }}
+                    docker manifest push ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}

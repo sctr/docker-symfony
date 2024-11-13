@@ -11,7 +11,7 @@ jobs:
             - name: Prune
               uses: vlaurin/action-ghcr-prune@v0.6.0
               with:
-                    token: ${{ secrets.YOUR_TOKEN }}
+                    token: ${{ secrets.GITHUB_TOKEN }}
                     organization: sctr
                     container: docker-symfony
                     dry-run: false

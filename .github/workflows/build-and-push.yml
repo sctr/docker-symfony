@@ -31,6 +31,7 @@ jobs:
               run: |
                   docker pull ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64 || true
                   docker build \
+                    --cache-from "${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64" \
                     -f ${{ matrix.phpversion }}/Dockerfile \
                     -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64 .
                   docker push ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64
@@ -58,6 +59,7 @@ jobs:
               run: |
                   docker pull ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64 || true
                   docker build \
+                    --cache-from "${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64" \
                     -f ${{ matrix.phpversion }}/Dockerfile \
                     -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64 .
                   docker push ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64

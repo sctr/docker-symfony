@@ -29,8 +29,6 @@ jobs:
 
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3
-              with:
-                  install: true
 
             - name: Cache Docker Layers from GHA
               uses: actions/cache@v3
@@ -43,9 +41,11 @@ jobs:
             - name: Build and Push Docker Image
               run: |
                   docker buildx build \
-                    --platform linux/amd64 \
+                    --platform linux/arm64 \
+                    --push \
                     --cache-from=type=gha,scope=${{ github.repository }} \
                     --cache-to=type=gha,scope=${{ github.repository }},mode=max \
+                    -f ${{ matrix.phpversion }}/Dockerfile \
                     -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64 .
                   docker push ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64
 
@@ -70,8 +70,6 @@ jobs:
 
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3
-              with:
-                  install: true
 
             - name: Cache Docker Layers from GHA
               uses: actions/cache@v3
@@ -85,8 +83,10 @@ jobs:
               run: |
                   docker buildx build \
                     --platform linux/arm64 \
+                    --push \
                     --cache-from=type=gha,scope=${{ github.repository }} \
                     --cache-to=type=gha,scope=${{ github.repository }},mode=max \
+                    -f ${{ matrix.phpversion }}/Dockerfile \
                     -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64 .
                   docker push ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64
 

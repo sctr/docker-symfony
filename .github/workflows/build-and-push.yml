@@ -14,7 +14,7 @@ jobs:
             matrix:
                 phpversion:
                     - 8.3
-                    - 8.4
+#                    - 8.4
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -27,26 +27,10 @@ jobs:
                   username: ${{ github.repository_owner }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v3
-
-            - name: Cache Docker Layers from GHA
-              uses: actions/cache@v3
-              with:
-                  path: /tmp/.docker-cache
-                  key: ${{ runner.os }}-docker-${{ github.sha }}
-                  restore-keys: |
-                      ${{ runner.os }}-docker-
-
             - name: Build and Push Docker Image
               run: |
-                  docker buildx build \
-                    --platform linux/arm64 \
-                    --push \
-                    --cache-from=type=gha,scope=${{ github.repository }} \
-                    --cache-to=type=gha,scope=${{ github.repository }},mode=max \
-                    -f ${{ matrix.phpversion }}/Dockerfile \
-                    -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64 .
+                  docker build \
+                    -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64 ./${{ matrix.phpversion }}
                   docker push ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64
 
     build-and-push-arm64:
@@ -55,7 +39,7 @@ jobs:
             matrix:
                 phpversion:
                     - 8.3
-                    - 8.4
+#                    - 8.4
         runs-on: ubuntu-latest-arm64
         steps:
             - name: Checkout
@@ -68,26 +52,10 @@ jobs:
                   username: ${{ github.repository_owner }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v3
-
-            - name: Cache Docker Layers from GHA
-              uses: actions/cache@v3
-              with:
-                  path: /tmp/.docker-cache
-                  key: ${{ runner.os }}-docker-${{ github.sha }}
-                  restore-keys: |
-                      ${{ runner.os }}-docker-
-
             - name: Build and Push Docker Image
               run: |
-                  docker buildx build \
-                    --platform linux/arm64 \
-                    --push \
-                    --cache-from=type=gha,scope=${{ github.repository }} \
-                    --cache-to=type=gha,scope=${{ github.repository }},mode=max \
-                    -f ${{ matrix.phpversion }}/Dockerfile \
-                    -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64 .
+                  docker build \
+                    -t ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64 ./${{ matrix.phpversion }}
                   docker push ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64
 
     create-multiarch-manifests:
@@ -97,7 +65,7 @@ jobs:
             matrix:
                 phpversion:
                     - 8.3
-                    - 8.4
+#                    - 8.4
         runs-on: ubuntu-latest
         steps:
             - name: Checkout

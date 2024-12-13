@@ -1,5 +1,4 @@
 ARG PHP_VERSION=8.3
-ARG CADDY_VERSION=2
 
 # -----------------------------------------------------
 # Caddy / FrankenPHP Build
@@ -11,7 +10,7 @@ ARG TARGETOS
 ARG TARGETARCH
 
 # Copy xcaddy in the builder image
-COPY --from=caddy:$CADDY_VERSION-builder /usr/bin/xcaddy /usr/bin/xcaddy
+COPY --from=caddy:builder /usr/bin/xcaddy /usr/bin/xcaddy
 
 # CGO must be enabled to build FrankenPHP
 ENV CGO_ENABLED=1 XCADDY_SETCAP=1 XCADDY_GO_BUILD_FLAGS="-ldflags '-w -s'"

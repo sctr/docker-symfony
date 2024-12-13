@@ -27,7 +27,7 @@ COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
 
 ARG PORT=9001
 
-ENV PORT=$PORT
+ENV PORT=$PORT SERVER_NAME=":80, :$PORT"
 ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tmp"
 
 WORKDIR /app

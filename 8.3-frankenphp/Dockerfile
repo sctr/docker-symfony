@@ -4,17 +4,13 @@ ARG PHP_VERSION=8.3
 # Caddy / FrankenPHP Build
 # -----------------------------------------------------
 FROM dunglas/frankenphp:1-builder-php$PHP_VERSION AS builder
-ARG TARGETPLATFORM
-ARG BUILDPLATFORM
-ARG TARGETOS
-ARG TARGETARCH
 
 # Copy xcaddy in the builder image
 COPY --from=caddy:builder /usr/bin/xcaddy /usr/bin/xcaddy
 
 # CGO must be enabled to build FrankenPHP
 ENV CGO_ENABLED=1 XCADDY_SETCAP=1 XCADDY_GO_BUILD_FLAGS="-ldflags '-w -s'"
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH xcaddy build \
+RUN xcaddy build \
 	--output /usr/local/bin/frankenphp \
 	--with github.com/dunglas/frankenphp=./ \
 	--with github.com/dunglas/frankenphp/caddy=./caddy/ \

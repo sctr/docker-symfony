@@ -14,6 +14,7 @@ jobs:
             matrix:
                 phpversion:
                     - 8.3
+                    - 8.3-frankenphp
                     - 8.4
         runs-on: ubuntu-latest
         steps:
@@ -42,6 +43,7 @@ jobs:
             matrix:
                 phpversion:
                     - 8.3
+                    - 8.3-frankenphp
                     - 8.4
         runs-on: ubuntu-latest-arm64
         steps:
@@ -71,6 +73,7 @@ jobs:
             matrix:
                 phpversion:
                     - 8.3
+                    - 8.3-frankenphp
                     - 8.4
         runs-on: ubuntu-latest
         steps:

@@ -48,11 +48,12 @@ RUN set -eux; \
 		amqp \
 		apcu \
 		intl \
-		opcache \
-		redis \
     	igbinary \
         gd \
         imagick/imagick@master  \
+		redis \
+		opcache \
+		parallel \
         uuid \
         vips \
         zip \

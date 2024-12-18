@@ -40,6 +40,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	git \
     imagemagick \
     supervisor \
+    jpegoptim \
+    optipng \
+    pngquant \
+    gifsicle \
+    webp \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
@@ -53,7 +58,6 @@ RUN set -eux; \
         imagick/imagick@master  \
 		redis \
 		opcache \
-		parallel \
         uuid \
         vips \
         zip \

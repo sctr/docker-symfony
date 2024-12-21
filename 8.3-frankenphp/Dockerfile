@@ -33,34 +33,39 @@ ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tm
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-	procps \
-	acl \
-	file \
-	gettext \
-	git \
-    imagemagick \
-    supervisor \
-    jpegoptim \
-    optipng \
-    pngquant \
-    gifsicle \
-    webp \
+        acl \
+        file \
+        gettext \
+        gifsicle \
+        git \
+        imagemagick \
+        jpegoptim \
+        optipng \
+        pngquant \
+        procps \
+        supervisor \
+        webp \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
 	install-php-extensions \
-		@composer \
-		amqp \
-		apcu \
-		intl \
-    	igbinary \
+        @composer \
+        amqp \
+        apcu \
+        igbinary \
+        exif \
         gd \
         imagick/imagick@master  \
-		redis \
-		opcache \
+        intl \
+        opcache \
         uuid \
         vips \
         zip \
+        sysvmsg \
+        sysvsem \
+        sysvshm \
+        pcntl \
+        redis \
 	;
 
 # Copying manifest files to host

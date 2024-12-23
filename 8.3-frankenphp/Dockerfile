@@ -40,15 +40,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         imagemagick \
         jpegoptim \
-        libvips42 \
-        libffi-dev \
-        libexif-dev \
+        libimagequant-dev \
+        libvips \
         optipng \
         pngquant \
         procps \
         supervisor \
-        webp \
-	&& rm -rf /var/lib/apt/lists/*
+        webp
+#	&& rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
 	install-php-extensions \

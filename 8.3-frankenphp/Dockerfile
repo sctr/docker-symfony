@@ -40,6 +40,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         imagemagick \
         jpegoptim \
+        libvips \
         optipng \
         pngquant \
         procps \
@@ -60,7 +61,6 @@ RUN set -eux; \
         intl \
         opcache \
         uuid \
-        vips \
         zip \
         sysvmsg \
         sysvsem \

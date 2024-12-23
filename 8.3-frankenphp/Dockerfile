@@ -54,6 +54,7 @@ RUN set -eux; \
         apcu \
         igbinary \
         exif \
+        ffi \
         gd \
         imagick/imagick@master  \
         intl \

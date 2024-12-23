@@ -3,7 +3,7 @@ ARG PHP_VERSION=8.3
 # -----------------------------------------------------
 # Caddy / FrankenPHP Build
 # -----------------------------------------------------
-FROM dunglas/frankenphp:1-builder-php$PHP_VERSION AS builder
+FROM dunglas/frankenphp:1.3.5-builder-php8.3 AS builder
 
 # Copy xcaddy in the builder image
 COPY --from=caddy:builder /usr/bin/xcaddy /usr/bin/xcaddy
@@ -20,7 +20,7 @@ RUN xcaddy build \
 # -----------------------------------------------------
 # FrankenPHP
 #------------------------------------------------------
-FROM dunglas/frankenphp:1-php$PHP_VERSION
+FROM dunglas/frankenphp:1.3.5-php8.3
 
 # Replace the official binary by the one contained your custom modules
 COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
@@ -40,8 +40,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         imagemagick \
         jpegoptim \
-        libimagequant-dev \
-        libvips \
         optipng \
         pngquant \
         procps \
@@ -68,6 +66,7 @@ RUN set -eux; \
         sysvshm \
         pcntl \
         redis \
+        vips \
 	;
 
 # Copying manifest files to host

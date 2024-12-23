@@ -56,7 +56,7 @@ RUN set -eux; \
         exif \
         ffi \
         gd \
-        imagick/imagick@master  \
+        imagick \
         intl \
         opcache \
         uuid \

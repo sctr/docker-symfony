@@ -9,7 +9,7 @@ ENV PORT=$PORT SERVER_NAME=":80, :$PORT"
 ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tmp"
 ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
 
-COPY --link --chmod=755 ./8.4-frankenphp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+COPY --chmod=755 8.4-frankenphp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 
 ENTRYPOINT ["docker-entrypoint"]
 
@@ -66,4 +66,4 @@ RUN set -eux; \
 	;
 
 # Copying manifest files to host
-COPY ./8.4-frankenphp/manifest /
+COPY 8.4-frankenphp/manifest /

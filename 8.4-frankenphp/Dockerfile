@@ -9,6 +9,10 @@ ENV PORT=$PORT SERVER_NAME=":80, :$PORT"
 ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tmp"
 ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
 
+COPY --link --chmod=755 /docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+
+ENTRYPOINT ["docker-entrypoint"]
+
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -19,11 +23,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         imagemagick \
         jpegoptim \
+        libexif-dev \
+        libheif-dev \
+        libvips42 \
         optipng \
         pngquant \
         procps \
         supervisor \
+        unzip \
         webp \
+        zip \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
@@ -31,22 +40,29 @@ RUN set -eux; \
         @composer \
         amqp \
         apcu \
-        igbinary \
+        bcmath \
         exif \
         ffi \
         gd \
+        gmp \
+        igbinary \
         imagick \
         intl \
+        maxminddb \
+        mongodb \
         opcache \
-        uuid \
-        zip \
+        pcntl \
+        pdo_mysql \
+        pdo_pgsql \
+        redis \
+        sockets \
         sockets \
         sysvmsg \
         sysvsem \
         sysvshm \
-        pcntl \
-        redis \
-        vips \
+        uuid \
+        xsl \
+        zip \
 	;
 
 # Copying manifest files to host

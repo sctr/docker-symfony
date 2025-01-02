@@ -4,7 +4,7 @@ ARG CADDY_VERSION=2
 # -----------------------------------------------------
 # Caddy Install
 # -----------------------------------------------------
-FROM caddy:$CADDY_VERSION-builder-alpine AS builder
+FROM caddy:$CADDY_VERSION-builder AS builder
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG TARGETOS

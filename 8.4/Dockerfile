@@ -23,16 +23,9 @@ ARG PUBLIC_DIR=public
 ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
 
-ENV REQUIRED_PACKAGES="git make unzip curl supervisor linux-headers gettext acl fcgi pcre python3 gcc libxslt gnupg imagemagick imagemagick-pdf libavif libwebp libpng freetype libjpeg-turbo rabbitmq-c ca-certificates coreutils"
-ENV EXTENSIONS="redis apcu ast zip mongodb maxminddb amqp pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sysvmsg sysvsem sysvshm pcntl gmp xsl bz2 gd igbinary uuid sockets Imagick/imagick@65e27f2bc0"
+ENV EXTENSIONS="redis apcu ast zip mongodb maxminddb amqp pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sysvmsg sysvsem sysvshm pcntl gmp xsl bz2 gd igbinary uuid sockets imagick"
 
-ENV DOCKER=true
 ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tmp"
-
-WORKDIR /app
-
-# Copying manifest files to host
-COPY ./8.4/manifest /
 
 # Caddy
 COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
@@ -40,15 +33,38 @@ COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
 # Composer install
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 
+WORKDIR /app
+
+# Copying manifest files to host
+COPY ./8.4/manifest /
+
 # php extensions installer: https://github.com/mlocati/docker-php-extension-installer
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions
 
 # Install required packages
-RUN apk add --update --no-cache $REQUIRED_PACKAGES && rm -rf /var/cache/apk/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        acl \
+        file \
+        gettext \
+        gifsicle \
+        git \
+        imagemagick \
+        jpegoptim \
+        libexif-dev \
+        libheif-dev \
+        libvips42 \
+        optipng \
+        pngquant \
+        procps \
+        supervisor \
+        unzip \
+        webp \
+        zip \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN IPE_ICU_EN_ONLY=1 install-php-extensions $EXTENSIONS
+RUN set -eux; install-php-extensions $EXTENSIONS
 
 # Update ulimit
 RUN ulimit -n 16384

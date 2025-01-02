@@ -13,10 +13,10 @@ jobs:
             fail-fast: false
             matrix:
                 phpversion:
-                    - 8.3
-                    - 8.3-frankenphp
+#                    - 8.3
+#                    - 8.3-frankenphp
                     - 8.4
-                    - 8.4-frankenphp
+#                    - 8.4-frankenphp
         runs-on: ubuntu-24.04
         steps:
             - name: Checkout
@@ -43,10 +43,10 @@ jobs:
             fail-fast: false
             matrix:
                 phpversion:
-                    - 8.3
-                    - 8.3-frankenphp
+#                    - 8.3
+#                    - 8.3-frankenphp
                     - 8.4
-                    - 8.4-frankenphp
+#                    - 8.4-frankenphp
         runs-on: ubuntu-latest-arm64
         steps:
             - name: Checkout
@@ -74,10 +74,10 @@ jobs:
             fail-fast: false
             matrix:
                 phpversion:
-                    - 8.3
-                    - 8.3-frankenphp
+#                    - 8.3
+#                    - 8.3-frankenphp
                     - 8.4
-                    - 8.4-frankenphp
+#                    - 8.4-frankenphp
         runs-on: ubuntu-24.04
         steps:
             - name: Checkout

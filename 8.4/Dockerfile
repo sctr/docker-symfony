@@ -26,6 +26,7 @@ ENV PUBLIC_DIR=$PUBLIC_DIR
 ENV EXTENSIONS="redis apcu ast zip mongodb maxminddb amqp pdo_mysql pdo_pgsql bcmath opcache gettext intl exif sysvmsg sysvsem sysvshm pcntl gmp xsl bz2 gd igbinary uuid sockets imagick"
 
 ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tmp"
+ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
 
 # Caddy
 COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy

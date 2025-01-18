@@ -23,9 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         imagemagick \
         jpegoptim \
-        libexif-dev \
-        libheif-dev \
-        libvips42 \
+        libheif \
         optipng \
         pngquant \
         procps \

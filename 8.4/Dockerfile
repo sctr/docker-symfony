@@ -52,7 +52,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         imagemagick \
         jpegoptim \
-        libheif \
+        libheif-dev \
         optipng \
         pngquant \
         procps \

@@ -9,7 +9,7 @@ ENV PORT=$PORT SERVER_NAME=":80, :$PORT"
 ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tmp"
 ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
 
-ENV EXTENSIONS="amqp apcu ast bcmath exif ffi gd gettext gmp igbinary Imagick/imagick@master intl maxminddb mongodb opcache pcntl pdo_mysql pdo_pgsql redis sockets sysvmsg sysvsem sysvshm uuid xsl zip"
+ENV EXTENSIONS="amqp apcu ast bcmath exif ffi gd gettext gmp igbinary intl maxminddb mongodb opcache pcntl pdo_mysql pdo_pgsql redis sockets sysvmsg sysvsem sysvshm uuid xsl zip"
 
 ENV BUILD_DEPS="make git autoconf wget"
 
@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
 # Install latest imagemagick
 # @see https://github.com/dooman87/imagemagick-docker/blob/main/Dockerfile.bookworm
 ####################################################################################################
-ARG IM_VERSION=7.1.1-41
+ARG IM_VERSION=7.1.1-43
 ARG LIB_HEIF_VERSION=1.19.5
 ARG LIB_AOM_VERSION=3.11.0
 ARG LIB_WEBP_VERSION=1.4.0
@@ -130,6 +130,12 @@ RUN apt-get -y update && \
 
 # Install PHP extensions
 RUN set -eux; install-php-extensions $EXTENSIONS
+
+# Enable Imagemagick extension
+RUN apt-get update && apt-get install -y --no-install-recommends libmagickwand-dev && \
+    pecl install imagick && \
+    docker-php-ext-enable imagick && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copying manifest files to host
 COPY ./8.4-frankenphp/manifest /

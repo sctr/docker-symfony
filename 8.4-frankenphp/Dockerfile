@@ -8,6 +8,9 @@ ARG PORT=9001
 ENV PORT=$PORT SERVER_NAME=":80, :$PORT"
 ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tmp"
 ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
+
+ENV EXTENSIONS="amqp apcu ast bcmath exif ffi gd gettext gmp igbinary imagick intl maxminddb mongodb opcache pcntl pdo_mysql pdo_pgsql redis sockets sysvmsg sysvsem sysvshm uuid xsl zip"
+
 ENV BUILD_DEPS="make git autoconf wget"
 
 COPY --link --chmod=755 ./8.4-frankenphp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
@@ -15,6 +18,9 @@ COPY --link --chmod=755 ./8.4-frankenphp/docker-entrypoint.sh /usr/local/bin/doc
 ENTRYPOINT ["docker-entrypoint"]
 
 WORKDIR /app
+
+# Composer install
+COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 
 RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
         acl \
@@ -33,6 +39,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
 
 ####################################################################################################
 # Install latest imagemagick
+# @see https://github.com/dooman87/imagemagick-docker/blob/main/Dockerfile.bookworm
+####################################################################################################
 ARG IM_VERSION=7.1.1-41
 ARG LIB_HEIF_VERSION=1.19.5
 ARG LIB_AOM_VERSION=3.11.0
@@ -100,6 +108,8 @@ RUN apt-get -y update && \
 
 ####################################################################################################
 # Install latest libvips
+# @see https://github.com/dooman87/imagemagick-docker/blob/main/Dockerfile.bookworm
+####################################################################################################
 ARG VIPS_VERSION=8.16.0
 ENV VIPS_BUILD_DEPS="build-essential ninja-build meson wget pkg-config"
 ENV VIPS_DEPS="libvips-dev"
@@ -118,34 +128,8 @@ RUN apt-get -y update && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /usr/local/src/vips-*
 
-RUN set -eux; \
-	install-php-extensions \
-        @composer \
-        amqp \
-        apcu \
-        bcmath \
-        exif \
-        ffi \
-        gd \
-        gmp \
-        igbinary \
-        imagick \
-        intl \
-        maxminddb \
-        mongodb \
-        opcache \
-        pcntl \
-        pdo_mysql \
-        pdo_pgsql \
-        redis \
-        sockets \
-        sysvmsg \
-        sysvsem \
-        sysvshm \
-        uuid \
-        xsl \
-        zip \
-	;
+# Install PHP extensions
+RUN set -eux; install-php-extensions $EXTENSIONS
 
 # Copying manifest files to host
 COPY ./8.4-frankenphp/manifest /

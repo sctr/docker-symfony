@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
         file \
         gettext \
         gifsicle \
+        imagemagick \
         jpegoptim \
         optipng \
         pngquant \

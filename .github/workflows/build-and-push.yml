@@ -6,17 +6,14 @@ on:
 env:
     REGISTRY: ghcr.io
     REGISTRY_IMAGE_NAME: ghcr.io/${{ github.repository }}
+    VERSIONS: ['8.4', '8.4-frankenphp']
 
 jobs:
     build-and-push-amd64:
         strategy:
             fail-fast: false
             matrix:
-                phpversion:
-                    - 8.3
-                    - 8.3-frankenphp
-                    - 8.4
-                    - 8.4-frankenphp
+                phpversion: ${{ env.VERSIONS }}
         runs-on: ubuntu-24.04
         steps:
             - name: Checkout
@@ -42,11 +39,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                phpversion:
-                    - 8.3
-                    - 8.3-frankenphp
-                    - 8.4
-                    - 8.4-frankenphp
+                phpversion: ${{ env.VERSIONS }}
         runs-on: ubuntu-latest-arm64
         steps:
             - name: Checkout
@@ -73,11 +66,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                phpversion:
-                    - 8.3
-                    - 8.3-frankenphp
-                    - 8.4
-                    - 8.4-frankenphp
+                phpversion: ${{ env.VERSIONS }}
         runs-on: ubuntu-24.04
         steps:
             - name: Checkout

@@ -26,16 +26,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
         acl \
         file \
         gettext \
-        gifsicle \
-        imagemagick \
-        jpegoptim \
-        optipng \
-        pngquant \
         procps \
         supervisor \
         unzip \
-        webp \
         zip \
+        imagemagick \
+        webp \
+        gifsicle \
+        jpegoptim \
+        optipng \
+        pngquant \
 	&& rm -rf /var/lib/apt/lists/*
 
 ####################################################################################################

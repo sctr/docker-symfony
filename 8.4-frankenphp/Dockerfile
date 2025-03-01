@@ -1,7 +1,7 @@
 # -----------------------------------------------------
 # FrankenPHP
 #------------------------------------------------------
-FROM dunglas/frankenphp:1.4.1-php8.4
+FROM dunglas/frankenphp:1-php8.4
 
 ARG PORT=9001
 
@@ -36,6 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
         jpegoptim \
         optipng \
         pngquant \
+        libnss3-tools \
 	&& rm -rf /var/lib/apt/lists/*
 
 ####################################################################################################

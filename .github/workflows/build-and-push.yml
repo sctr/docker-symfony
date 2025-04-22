@@ -44,7 +44,7 @@ jobs:
                 phpversion:
                     - '8.4'
                     - '8.4-frankenphp'
-        runs-on: ubuntu-latest-arm64
+        runs-on: ubuntu-24.04-arm
         steps:
             - name: Checkout
               uses: actions/checkout@v4

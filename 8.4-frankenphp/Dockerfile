@@ -43,7 +43,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
 # Install latest libvips
 # @see https://github.com/dooman87/imagemagick-docker/blob/main/Dockerfile.bookworm
 ####################################################################################################
-ARG VIPS_VERSION=8.16.0
+ARG VIPS_VERSION=8.17.0
 ENV VIPS_BUILD_DEPS="build-essential ninja-build meson wget pkg-config"
 ENV VIPS_DEPS="libvips-dev"
 ENV LD_LIBRARY_PATH="/usr/local/lib"

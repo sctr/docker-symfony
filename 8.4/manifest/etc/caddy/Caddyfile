@@ -25,8 +25,20 @@
     }
 
     log {
-        output stdout
-        format console
+        output stderr
+        level warn
+        format json {
+            message_key log
+            level_key level
+            time_key dt
+            name_key logger
+            caller_key function
+            stacktrace_key stack
+            time_format "2006-01-02 15:04:05 MST"  # RFC3339-like format
+			time_local  # Use local timezone
+			duration_format "ms"
+            level_format "upper"
+        }
     }
 
     push

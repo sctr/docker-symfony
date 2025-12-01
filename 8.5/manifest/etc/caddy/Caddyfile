@@ -1,0 +1,46 @@
+:80, :{$PORT} {
+    root * /app/{$PUBLIC_DIR}
+
+    reverse_proxy /php-fpm-status 127.0.0.1:9000 {
+        transport fastcgi {
+            split .php
+        }
+    }
+
+    redir /index.php* /
+
+    php_fastcgi 127.0.0.1:9000 {
+        trusted_proxies private_ranges
+    }
+
+    file_server
+
+    header / {
+        # Enable cross-site filter (XSS) and tell browser to block detected attacks
+        X-XSS-Protection "1; mode=block"
+        # Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
+        X-Content-Type-Options "nosniff"
+        # Disallow the site to be rendered within a frame (clickjacking protection)
+        X-Frame-Options "DENY"
+    }
+
+    log {
+        output stderr
+        level warn
+        format json {
+            message_key log
+            level_key level
+            time_key dt
+            name_key logger
+            caller_key function
+            stacktrace_key stack
+            time_format "2006-01-02 15:04:05 MST"  # RFC3339-like format
+			time_local  # Use local timezone
+			duration_format "ms"
+            level_format "upper"
+        }
+    }
+
+    push
+    encode zstd gzip
+}

@@ -10,7 +10,9 @@ ARG BUILDPLATFORM
 ARG TARGETOS
 ARG TARGETARCH
 
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH xcaddy build
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH xcaddy build \
+    --with github.com/mholt/caddy-ratelimit \
+    --with github.com/pberkel/caddy-storage-redis
 
 # -----------------------------------------------------
 # App Itself

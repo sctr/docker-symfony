@@ -15,9 +15,9 @@ jobs:
             matrix:
                 phpversion:
                     - '8.4'
-                    - '8.4-frankenphp'
                     - '8.5'
                     - '8.5-frankenphp'
+                    - '8.5-www'
         runs-on: ubuntu-24.04
         steps:
             - name: Checkout
@@ -45,9 +45,9 @@ jobs:
             matrix:
                 phpversion:
                     - '8.4'
-                    - '8.4-frankenphp'
                     - '8.5'
                     - '8.5-frankenphp'
+                    - '8.5-www'
         runs-on: ubuntu-24.04-arm
         steps:
             - name: Checkout
@@ -76,9 +76,9 @@ jobs:
             matrix:
                 phpversion:
                     - '8.4'
-                    - '8.4-frankenphp'
                     - '8.5'
                     - '8.5-frankenphp'
+                    - '8.5-www'
         runs-on: ubuntu-24.04
         steps:
             - name: Checkout

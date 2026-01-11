@@ -89,14 +89,5 @@ RUN apt-get -y update && \
 # Install PHP extensions
 RUN set -eux; install-php-extensions $EXTENSIONS
 
-# Copy Imagemagick policy
-COPY /8.5/manifest/IM7-policy.xml /etc/ImageMagick-7/policy.xml
-
-# Imagick version
-RUN php -r 'var_dump(Imagick::getVersion());'
-
-# Imagick formats
-RUN php -r 'var_dump(Imagick::queryFormats());'
-
 # Update ulimit
 RUN ulimit -n 16384

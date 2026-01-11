@@ -18,7 +18,8 @@ RUN CGO_ENABLED=1 \
     --with github.com/dunglas/frankenphp/caddy=./caddy/ \
     --with github.com/mholt/caddy-ratelimit \
     --with github.com/pberkel/caddy-storage-redis \
-    --with github.com/ggicci/caddy-jwt
+    --with github.com/ggicci/caddy-jwt \
+    --with github.com/dunglas/caddy-cbrotli
 
 # -----------------------------------------------------
 # FrankenPHP
@@ -88,15 +89,6 @@ RUN apt-get -y update && \
 
 # Install PHP extensions
 RUN set -eux; install-php-extensions $EXTENSIONS
-
-# Copy Imagemagick policy
-COPY /8.5/manifest/IM7-policy.xml /etc/ImageMagick-7/policy.xml
-
-# Imagick version
-RUN php -r 'var_dump(Imagick::getVersion());'
-
-# Imagick formats
-RUN php -r 'var_dump(Imagick::queryFormats());'
 
 # Copying manifest files to host
 COPY ./8.5-www/manifest /

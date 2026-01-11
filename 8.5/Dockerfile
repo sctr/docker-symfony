@@ -40,9 +40,6 @@ COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 
 WORKDIR /app
 
-# Copying manifest files to host
-COPY ./8.5/manifest /
-
 # php extensions installer: https://github.com/mlocati/docker-php-extension-installer
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions
@@ -75,6 +72,9 @@ RUN /tmp/install-libvips.sh ${VIPS_VERSION} && rm /tmp/install-libvips.sh
 
 # Install PHP extensions
 RUN set -eux; install-php-extensions $EXTENSIONS
+
+# Copying manifest files to host
+COPY ./8.5/manifest /
 
 # Copy Imagemagick policy
 RUN mv /etc/ImageMagick-7/IM7-policy.xml /etc/ImageMagick-7/policy.xml

@@ -77,8 +77,8 @@ RUN /tmp/install-libvips.sh ${VIPS_VERSION} && rm /tmp/install-libvips.sh
 # Install PHP extensions
 RUN set -eux; install-php-extensions $EXTENSIONS
 
-# Copy Imagemagick policy
-RUN mv /etc/ImageMagick-7/IM7-policy.xml /etc/ImageMagick-7/policy.xml
-
 # Copying manifest files to host
 COPY ./8.5-www/manifest /
+
+# Copy Imagemagick policy
+RUN mv /etc/ImageMagick-7/IM7-policy.xml /etc/ImageMagick-7/policy.xml

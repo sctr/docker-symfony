@@ -65,27 +65,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
         libnss3-tools \
 	&& rm -rf /var/lib/apt/lists/*
 
-####################################################################################################
 # Install latest libvips
 # @see https://github.com/dooman87/imagemagick-docker/blob/main/Dockerfile.bookworm
-####################################################################################################
 ARG VIPS_VERSION=8.18.0
-ENV VIPS_BUILD_DEPS="build-essential ninja-build meson wget pkg-config"
-ENV VIPS_DEPS="libvips-dev"
 ENV LD_LIBRARY_PATH="/usr/local/lib"
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
 
-RUN apt-get -y update && \
-	apt-get -y upgrade && \
-	apt-get remove --autoremove --purge -y libvips && \
-    apt-get install -y --no-install-recommends ${VIPS_BUILD_DEPS} ${VIPS_DEPS} && \
-    cd /usr/local/src && wget https://github.com/libvips/libvips/releases/download/v${VIPS_VERSION}/vips-${VIPS_VERSION}.tar.xz && \
-    xz -d -v vips-${VIPS_VERSION}.tar.xz && tar xf vips-${VIPS_VERSION}.tar && \
-    cd vips-${VIPS_VERSION} && \
-    meson setup build --libdir lib && meson compile -C build && meson install -C build && \
-    apt-get remove --autoremove --purge -y ${VIPS_BUILD_DEPS} && \
-    rm -rf /var/lib/apt/lists/* && \
-    rm -rf /usr/local/src/vips-*
+COPY --chmod=755 scripts/install-libvips.sh /tmp/install-libvips.sh
+RUN /tmp/install-libvips.sh ${VIPS_VERSION} && rm /tmp/install-libvips.sh
 
 # Install PHP extensions
 RUN set -eux; install-php-extensions $EXTENSIONS

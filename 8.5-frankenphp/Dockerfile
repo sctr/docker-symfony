@@ -1,7 +1,7 @@
 # -----------------------------------------------------
 # FrankenPHP
 #------------------------------------------------------
-FROM dunglas/frankenphp:1-php8.5
+FROM dunglas/frankenphp:1-php8.5-trixie
 
 ARG PORT=9001
 

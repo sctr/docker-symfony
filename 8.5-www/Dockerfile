@@ -1,7 +1,7 @@
 # -----------------------------------------------------
 # Caddy Modules Builder
 # -----------------------------------------------------
-FROM dunglas/frankenphp:builder-php8.5-bookworm AS builder
+FROM dunglas/frankenphp:1-builder-php8.5-trixie AS builder
 
 # Copy xcaddy from caddy builder
 COPY --from=caddy:builder /usr/bin/xcaddy /usr/bin/xcaddy
@@ -24,7 +24,7 @@ RUN CGO_ENABLED=1 \
 # -----------------------------------------------------
 # FrankenPHP
 #------------------------------------------------------
-FROM dunglas/frankenphp:1-php8.5
+FROM dunglas/frankenphp:1-php8.5-trixie
 
 # Replace the official binary with the one containing custom modules
 COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
@@ -35,7 +35,7 @@ ENV PORT=$PORT SERVER_NAME=":80, :$PORT"
 ENV COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_INTERACTION=1 COMPOSER_CACHE_DIR="/tmp"
 ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
 
-ENV EXTENSIONS="amqp apcu ast bcmath exif ffi gd gettext gmp igbinary imagick intl maxminddb mongodb opcache pcntl pdo_mysql pdo_pgsql redis sockets sysvmsg sysvsem sysvshm uuid xsl zip grpc protobuf"
+ENV EXTENSIONS="amqp apcu ast bcmath exif gd gettext gmp igbinary imagick intl maxminddb mongodb opcache pcntl pdo_mysql pdo_pgsql redis sockets sysvmsg sysvsem sysvshm uuid xsl zip"
 
 ENV BUILD_DEPS="make git autoconf wget"
 
@@ -64,15 +64,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
         pngquant \
         libnss3-tools \
 	&& rm -rf /var/lib/apt/lists/*
-
-# Install latest libvips
-# @see https://github.com/dooman87/imagemagick-docker/blob/main/Dockerfile.bookworm
-ARG VIPS_VERSION=8.18.0
-ENV LD_LIBRARY_PATH="/usr/local/lib"
-ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
-
-COPY --chmod=755 scripts/install-libvips.sh /tmp/install-libvips.sh
-RUN /tmp/install-libvips.sh ${VIPS_VERSION} && rm /tmp/install-libvips.sh
 
 # Install PHP extensions
 RUN set -eux; install-php-extensions $EXTENSIONS

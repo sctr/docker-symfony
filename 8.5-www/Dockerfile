@@ -1,10 +1,12 @@
+ARG CADDY_VERSION=2.11
+
 # -----------------------------------------------------
 # Caddy Modules Builder
 # -----------------------------------------------------
 FROM dunglas/frankenphp:1-builder-php8.5-trixie AS builder
 
 # Copy xcaddy from caddy builder
-COPY --from=caddy:builder /usr/bin/xcaddy /usr/bin/xcaddy
+COPY --from=caddy:${CADDY_VERSION}-builder /usr/bin/xcaddy /usr/bin/xcaddy
 
 # Build FrankenPHP with custom Caddy modules
 RUN CGO_ENABLED=1 \
@@ -16,10 +18,10 @@ RUN CGO_ENABLED=1 \
     --output /usr/local/bin/frankenphp \
     --with github.com/dunglas/frankenphp=./ \
     --with github.com/dunglas/frankenphp/caddy=./caddy/ \
+    --with github.com/dunglas/caddy-cbrotli \
     --with github.com/mholt/caddy-ratelimit \
-    --with github.com/pberkel/caddy-storage-redis \
-    --with github.com/ggicci/caddy-jwt \
-    --with github.com/dunglas/caddy-cbrotli
+    --with github.com/gamalan/caddy-tlsredis \
+    --with github.com/ggicci/caddy-jwt
 
 # -----------------------------------------------------
 # FrankenPHP

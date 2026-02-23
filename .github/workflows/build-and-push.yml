@@ -14,7 +14,7 @@ jobs:
             fail-fast: false
             matrix:
                 phpversion:
-                    - '8.4'
+#                    - '8.4'
                     - '8.5'
                     - '8.5-frankenphp'
                     - '8.5-www'
@@ -45,7 +45,7 @@ jobs:
             fail-fast: false
             matrix:
                 phpversion:
-                    - '8.4'
+#                    - '8.4'
                     - '8.5'
                     - '8.5-frankenphp'
                     - '8.5-www'
@@ -78,7 +78,7 @@ jobs:
             fail-fast: false
             matrix:
                 phpversion:
-                    - '8.4'
+#                    - '8.4'
                     - '8.5'
                     - '8.5-frankenphp'
                     - '8.5-www'

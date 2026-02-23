@@ -72,6 +72,7 @@ jobs:
                   docker push ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64
 
     create-multiarch-manifests:
+        if: ${{ !cancelled() }}
         needs: [build-and-push-amd64, build-and-push-arm64]
         strategy:
             fail-fast: false
@@ -93,7 +94,22 @@ jobs:
                   username: ${{ github.repository_owner }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
+            -   name: Check if arch images exist
+                id: check-images
+                run: |
+                    AMD64_EXISTS=false
+                    ARM64_EXISTS=false
+                    if docker manifest inspect ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-amd64 > /dev/null 2>&1; then
+                      AMD64_EXISTS=true
+                    fi
+                    if docker manifest inspect ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }}-arm64 > /dev/null 2>&1; then
+                      ARM64_EXISTS=true
+                    fi
+                    echo "amd64=$AMD64_EXISTS" >> $GITHUB_OUTPUT
+                    echo "arm64=$ARM64_EXISTS" >> $GITHUB_OUTPUT
+
             -   name: Create ${{ matrix.phpversion }} manifest and push
+                if: steps.check-images.outputs.amd64 == 'true' && steps.check-images.outputs.arm64 == 'true'
                 run: |
                     docker manifest create \
                       ${{ env.REGISTRY_IMAGE_NAME }}:${{ matrix.phpversion }} \

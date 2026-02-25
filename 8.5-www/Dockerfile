@@ -21,9 +21,9 @@ RUN CGO_ENABLED=1 \
     --with github.com/dunglas/frankenphp=./ \
     --with github.com/dunglas/frankenphp/caddy=./caddy/ \
     --with github.com/dunglas/caddy-cbrotli \
+    --with github.com/ggicci/caddy-jwt \
     --with github.com/mholt/caddy-ratelimit \
-    --with github.com/gamalan/caddy-tlsredis \
-    --with github.com/ggicci/caddy-jwt
+    --with github.com/pberkel/caddy-storage-redis
 
 # -----------------------------------------------------
 # FrankenPHP

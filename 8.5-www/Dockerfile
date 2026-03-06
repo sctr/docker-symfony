@@ -23,7 +23,8 @@ RUN CGO_ENABLED=1 \
     --with github.com/dunglas/caddy-cbrotli \
     --with github.com/ggicci/caddy-jwt \
     --with github.com/mholt/caddy-ratelimit \
-    --with github.com/pberkel/caddy-storage-redis
+    --with github.com/pberkel/caddy-storage-redis \
+    --with github.com/sctr/frankenphp-tailwind-merge
 
 # -----------------------------------------------------
 # FrankenPHP

@@ -11,7 +11,7 @@ ARG TARGETOS
 ARG TARGETARCH
 
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH xcaddy build \
-    --with github.com/dunglas/caddy-cbrotli
+    --with github.com/ueffel/caddy-brotli
 
 # -----------------------------------------------------
 # App Itself

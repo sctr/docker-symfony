@@ -1,11 +1,12 @@
 ARG CADDY_VERSION=2.11
+ARG FRANKENPHP_VERSION=1.11.3
 
 FROM caddy:${CADDY_VERSION}-builder AS caddy-builder
 
 # -----------------------------------------------------
 # FrankenPHP Build
 # -----------------------------------------------------
-FROM dunglas/frankenphp:1-builder-php8.5-trixie AS builder
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-builder-php8.5-trixie AS builder
 
 # Copy xcaddy from caddy builder
 COPY --from=caddy-builder /usr/bin/xcaddy /usr/bin/xcaddy
@@ -29,7 +30,7 @@ RUN CGO_ENABLED=1 \
 # -----------------------------------------------------
 # FrankenPHP
 #------------------------------------------------------
-FROM dunglas/frankenphp:1-php8.5-trixie
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php8.5-trixie
 
 # Replace the official binary with the one containing custom modules
 COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp

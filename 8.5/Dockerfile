@@ -14,6 +14,34 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH xcaddy build \
     --with github.com/ueffel/caddy-brotli
 
 # -----------------------------------------------------
+# Build kreuzberg PHP extension from Rust source
+# -----------------------------------------------------
+FROM php:$PHP_VERSION-fpm AS kreuzberg-builder
+
+# Install build dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        cmake \
+        g++ \
+        pkg-config \
+        libssl-dev \
+        libleptonica-dev \
+        libtesseract-dev \
+        clang \
+        curl \
+        file \
+        && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+RUN git clone --depth 1 https://github.com/kreuzberg-dev/kreuzberg.git /tmp/kreuzberg \
+    && cd /tmp/kreuzberg/crates/kreuzberg-php \
+    && cargo build --release
+
+# -----------------------------------------------------
 # App Itself
 # -----------------------------------------------------
 FROM php:$PHP_VERSION-fpm
@@ -58,6 +86,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
         optipng \
         pngquant \
 	&& rm -rf /var/lib/apt/lists/*
+
+
+# Kreuzberg PHP extension (built from Rust source)
+COPY --from=kreuzberg-builder /tmp/kreuzberg/target/release/libkreuzberg_php.so /tmp/kreuzberg.so
+RUN mv /tmp/kreuzberg.so $(php -r "echo ini_get('extension_dir');")/kreuzberg.so \
+    && echo "#extension=kreuzberg" > $PHP_INI_DIR/conf.d/kreuzberg.ini
 
 # Install latest libvips
 # @see https://github.com/dooman87/imagemagick-docker/blob/main/Dockerfile.bookworm

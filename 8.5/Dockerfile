@@ -30,6 +30,7 @@ RUN apt-get update && \
         clang \
         curl \
         file \
+        git \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

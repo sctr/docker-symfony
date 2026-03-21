@@ -1,5 +1,5 @@
 ARG CADDY_VERSION=2.11
-ARG FRANKENPHP_VERSION=1.11.3
+ARG FRANKENPHP_VERSION=1.12.1
 
 FROM caddy:${CADDY_VERSION}-builder AS caddy-builder
 
@@ -26,8 +26,7 @@ RUN CGO_ENABLED=1 \
     --with github.com/dunglas/caddy-cbrotli@v1.0.1 \
     --with github.com/ggicci/caddy-jwt@v1.1.2 \
     --with github.com/mholt/caddy-ratelimit@v0.1.0 \
-    --with github.com/pberkel/caddy-storage-redis@v1.7.0 \
-    --with github.com/sctr/frankenphp-tailwind-merge
+    --with github.com/pberkel/caddy-storage-redis@v1.7.0
 
 # -----------------------------------------------------
 # FrankenPHP

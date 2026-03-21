@@ -19,12 +19,12 @@ RUN CGO_ENABLED=1 \
     CGO_LDFLAGS="$(php-config --ldflags) $(php-config --libs)" \
     xcaddy build \
     --output /usr/local/bin/frankenphp \
-    --with github.com/dunglas/frankenphp=./ \
-    --with github.com/dunglas/frankenphp/caddy=./caddy/ \
-    --with github.com/dunglas/caddy-cbrotli \
-    --with github.com/ggicci/caddy-jwt \
-    --with github.com/mholt/caddy-ratelimit \
-    --with github.com/pberkel/caddy-storage-redis \
+    --with github.com/dunglas/frankenphp@v${FRANKENPHP_VERSION}=./ \
+    --with github.com/dunglas/frankenphp/caddy@v${FRANKENPHP_VERSION}=./caddy/ \
+    --with github.com/dunglas/caddy-cbrotli@v1.0.1 \
+    --with github.com/ggicci/caddy-jwt@v1.1.2 \
+    --with github.com/mholt/caddy-ratelimit@v0.1.0 \
+    --with github.com/pberkel/caddy-storage-redis@v1.7.0 \
     --with github.com/sctr/frankenphp-tailwind-merge
 
 # -----------------------------------------------------

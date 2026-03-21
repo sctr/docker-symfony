@@ -1,12 +1,13 @@
 ARG CADDY_VERSION=2.11
-ARG FRANKENPHP_VERSION=1.11.3
 
 FROM caddy:${CADDY_VERSION}-builder AS caddy-builder
 
 # -----------------------------------------------------
 # FrankenPHP Build
 # -----------------------------------------------------
-FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-builder-php8.5-trixie AS builder
+FROM dunglas/frankenphp:1-builder-php8.5-trixie AS builder
+
+ARG FRANKENPHP_VERSION=1.11.3
 
 # Copy xcaddy from caddy builder
 COPY --from=caddy-builder /usr/bin/xcaddy /usr/bin/xcaddy

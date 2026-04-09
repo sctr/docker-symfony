@@ -66,7 +66,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
 
 # Install latest libvips
 # @see https://github.com/dooman87/imagemagick-docker/blob/main/Dockerfile.bookworm
-ARG VIPS_VERSION=8.18.0
+ARG VIPS_VERSION=8.18.2
 ENV LD_LIBRARY_PATH="/usr/local/lib"
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
 

@@ -38,9 +38,16 @@ RUN apt-get update && \
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN git clone --depth 1 https://github.com/kreuzberg-dev/kreuzberg.git /tmp/kreuzberg \
+ARG KREUZBERG_VERSION=v4.9.4
+RUN git clone --depth 1 --branch ${KREUZBERG_VERSION} https://github.com/kreuzberg-dev/kreuzberg.git /tmp/kreuzberg \
     && cd /tmp/kreuzberg/crates/kreuzberg-php \
-    && cargo build --release
+    && for i in 1 2 3 4 5; do \
+         cargo build --release && break || { \
+           echo "cargo build failed (attempt $i), retrying in $((i*30))s..."; \
+           sleep $((i*30)); \
+         }; \
+       done \
+    && test -f /tmp/kreuzberg/target/release/libkreuzberg_php.so
 
 # -----------------------------------------------------
 # App Itself

@@ -38,7 +38,7 @@ RUN apt-get update && \
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-ARG KREUZBERG_VERSION=v4.9.4
+ARG KREUZBERG_VERSION=v4.9.8
 RUN git clone --depth 1 --branch ${KREUZBERG_VERSION} https://github.com/kreuzberg-dev/kreuzberg.git /tmp/kreuzberg \
     && cd /tmp/kreuzberg/crates/kreuzberg-php \
     && for i in 1 2 3 4 5; do \

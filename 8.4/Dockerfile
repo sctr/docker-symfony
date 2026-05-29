@@ -13,7 +13,7 @@ ARG TARGETARCH
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH xcaddy build \
     --with github.com/mholt/caddy-ratelimit \
     --with github.com/pberkel/caddy-storage-redis \
-    --with github.com/ggicci/caddy-jwt
+    --with github.com/ggicci/caddy-jwt@28e0de3db362a787564352ec22e97aa743a371f3 #1.2.0
 
 # -----------------------------------------------------
 # App Itself

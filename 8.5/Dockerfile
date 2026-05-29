@@ -11,7 +11,8 @@ ARG TARGETOS
 ARG TARGETARCH
 
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH xcaddy build \
-    --with github.com/ueffel/caddy-brotli
+    --with github.com/ueffel/caddy-brotli \
+    --with github.com/ggicci/caddy-jwt@28e0de3db362a787564352ec22e97aa743a371f3 #1.2.0
 
 # -----------------------------------------------------
 # Build kreuzberg PHP extension from Rust source

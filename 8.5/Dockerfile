@@ -15,45 +15,8 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH xcaddy build \
     --with github.com/ggicci/caddy-jwt@28e0de3db362a787564352ec22e97aa743a371f3 #1.2.0
 
 # -----------------------------------------------------
-# Build kreuzberg PHP extension from Rust source
-# -----------------------------------------------------
-FROM php:$PHP_VERSION-fpm AS kreuzberg-builder
-
-# Install build dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        cmake \
-        g++ \
-        pkg-config \
-        libssl-dev \
-        libleptonica-dev \
-        libtesseract-dev \
-        clang \
-        curl \
-        file \
-        git \
-        && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-
-ARG KREUZBERG_VERSION=v4.9.8
-# v4 LTS moved to kreuzberg-lts; the old repo redirects to xberg-io/xberg which has no v4 tags
-RUN git clone --depth 1 --branch ${KREUZBERG_VERSION} https://github.com/kreuzberg-dev/kreuzberg-lts.git /tmp/kreuzberg \
-    && cd /tmp/kreuzberg/crates/kreuzberg-php \
-    && for i in 1 2 3 4 5; do \
-         cargo build --release && break || { \
-           echo "cargo build failed (attempt $i), retrying in $((i*30))s..."; \
-           sleep $((i*30)); \
-         }; \
-       done \
-    && test -f /tmp/kreuzberg/target/release/libkreuzberg_php.so
-
-# -----------------------------------------------------
 # Build xberg PHP extension from Rust source
-# (successor to kreuzberg, see kreuzberg migration docs)
+# (successor to kreuzberg)
 # -----------------------------------------------------
 FROM php:$PHP_VERSION-fpm AS xberg-builder
 
@@ -161,11 +124,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
         libnuma1 \
 	&& rm -rf /var/lib/apt/lists/*
 
-
-# Kreuzberg PHP extension (built from Rust source)
-COPY --from=kreuzberg-builder /tmp/kreuzberg/target/release/libkreuzberg_php.so /tmp/kreuzberg.so
-RUN mv /tmp/kreuzberg.so $(php -r "echo ini_get('extension_dir');")/kreuzberg.so \
-    && echo "#extension=kreuzberg" > $PHP_INI_DIR/conf.d/kreuzberg.ini
 
 # Xberg PHP extension (built from Rust source), successor to kreuzberg
 COPY --from=xberg-builder /tmp/xberg/target/release/libxberg_php.so /tmp/xberg.so

@@ -60,7 +60,9 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 ARG XBERG_VERSION=v1.0.0-rc.28
-RUN git clone --depth 1 --recurse-submodules --shallow-submodules --branch ${XBERG_VERSION} https://github.com/xberg-io/xberg.git /tmp/xberg \
+# No --recurse-submodules: the only submodule (test_documents) is test fixtures
+# not needed for cargo build, and its pinned commit can vanish upstream
+RUN git clone --depth 1 --branch ${XBERG_VERSION} https://github.com/xberg-io/xberg.git /tmp/xberg \
     && cd /tmp/xberg/crates/xberg-php \
     && for i in 1 2 3 4 5; do \
          cargo build --release && break || { \

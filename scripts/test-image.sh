@@ -2,7 +2,9 @@
 # Usage: sh scripts/test-image.sh IMAGE 8.5|8.5-www|8.5-frankenphp
 set -eu
 
-docker run --rm --network none --read-only --tmpfs /tmp --entrypoint sh "$1" -eu -c '
+docker run --rm --network none --read-only "$1" php -v
+
+docker run --rm --network none --read-only --tmpfs /tmp:exec --entrypoint sh "$1" -eu -c '
     php -r '\''
         foreach (explode(" ", getenv("EXTENSIONS")) as $extension) {
             if (!extension_loaded($extension === "opcache" ? "Zend OPcache" : $extension)) {

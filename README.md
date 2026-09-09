@@ -50,6 +50,37 @@ RUN composer install --no-dev --optimize-autoloader
 
 Default ports: 80 (HTTP), 9001 (configurable via `PORT` env)
 
+### PHP 8.5 production builds
+
+Install Composer dependencies in the downstream application image, as above.
+The `8.5-www` and `8.5-frankenphp` entrypoints no longer install dependencies by default. For development
+set `INSTALL_COMPOSER_DEPS=1` to restore installation when `vendor/` is empty.
+
+All three PHP 8.5 images retain Git for Composer source installs, the upstream PHP build tools
+for downstream extension builds, and their existing PHP extensions. Removing files
+inherited from a base image does not reclaim its layers; removing that toolchain or
+the original FrankenPHP binary requires a different runtime base.
+
+`8.5` and `8.5-frankenphp` retain libvips 8.18.2, but their shared installer removes newly installed build
+dependencies after preserving runtime libraries. This cleanup also applies to the
+other variants using `scripts/install-libvips.sh`.
+
+OPcache timestamp validation remains enabled for applications that update files in
+place. Immutable production deployments can add `opcache.validate_timestamps=0`
+to an application INI file, provided they restart the container on every code change.
+Set file descriptor limits at deployment time (for example, Docker's
+`--ulimit nofile=16384:16384`); a Dockerfile `RUN ulimit` does not persist them.
+
+CI validates pull requests without publishing images. Master builds publish images
+and a separate registry build cache per variant and architecture, including builder
+stages. To run the image smoke checks locally:
+
+```bash
+sh scripts/test-image.sh docker-symfony:8.5 8.5
+sh scripts/test-image.sh docker-symfony:8.5-www 8.5-www
+sh scripts/test-image.sh docker-symfony:8.5-frankenphp 8.5-frankenphp
+```
+
 ## Useful Links
 
 - https://github.com/mvorisek/image-php/tree/master

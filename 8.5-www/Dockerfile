@@ -34,9 +34,6 @@ RUN CGO_ENABLED=1 \
 #------------------------------------------------------
 FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php8.5-trixie
 
-# Replace the official binary with the one containing custom modules
-COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
-
 ARG PORT=9001
 
 ENV PORT=$PORT SERVER_NAME=":80, :$PORT"
@@ -45,18 +42,10 @@ ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
 
 ENV EXTENSIONS="amqp apcu ast bcmath exif gd gettext gmp igbinary imagick intl opcache pcntl redis mongodb sockets sysvmsg sysvsem sysvshm uuid xsl zip grpc protobuf opentelemetry"
 
-ENV BUILD_DEPS="make git autoconf wget"
-
-COPY --link --chmod=755 ./8.5-www/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
-
-ENTRYPOINT ["docker-entrypoint"]
-
 WORKDIR /app
 
-# Composer install
-COPY --from=composer/composer:2-bin /composer /usr/bin/composer
-
-RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git \
         acl \
         file \
         gettext \
@@ -75,6 +64,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
 
 # Install PHP extensions
 RUN set -eux; install-php-extensions $EXTENSIONS
+
+# Keep frequently changing binaries and startup code after dependency installation.
+COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
+COPY --from=composer/composer:2-bin /composer /usr/bin/composer
+COPY --link --chmod=755 ./8.5-www/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+
+ENTRYPOINT ["docker-entrypoint"]
 
 # Copying manifest files to host
 COPY ./8.5-www/manifest /

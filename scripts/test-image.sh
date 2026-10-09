@@ -7,6 +7,8 @@ docker run --rm --network none --read-only "$1" php -v
 docker run --rm --network none --read-only --tmpfs /tmp:exec --entrypoint sh "$1" -eu -c '
     php -r '\''
         foreach (explode(" ", getenv("EXTENSIONS")) as $extension) {
+            // GitHub sources: "vendor/php-ext-name@ref" loads as "name".
+            $extension = preg_replace("~^.*/(php-ext-)?|@.*$~", "", $extension);
             if (!extension_loaded($extension === "opcache" ? "Zend OPcache" : $extension)) {
                 throw new RuntimeException("Missing extension: " . $extension);
             }

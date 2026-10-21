@@ -1,12 +1,13 @@
 ARG CADDY_VERSION=2.11
 ARG FRANKENPHP_VERSION=1.13.0
+ARG PHP_VERSION=8.5.12
 
 FROM caddy:${CADDY_VERSION}-builder AS caddy-builder
 
 # -----------------------------------------------------
 # FrankenPHP Build
 # -----------------------------------------------------
-FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-builder-php8.5-trixie AS builder
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-builder-php${PHP_VERSION}-trixie AS builder
 
 ARG FRANKENPHP_VERSION
 
@@ -32,7 +33,7 @@ RUN CGO_ENABLED=1 \
 # -----------------------------------------------------
 # FrankenPHP
 #------------------------------------------------------
-FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php8.5-trixie
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-trixie
 
 ARG PORT=9001
 

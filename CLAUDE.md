@@ -26,14 +26,16 @@ docker build --cache-from ghcr.io/sctr/docker-symfony:8.4-amd64 -f 8.4/Dockerfil
 
 Two types of images:
 
-1. **PHP-FPM + Caddy** (directories: `8.4/`, `8.5/`)
+1. **PHP-FPM + Caddy** (directories: `8.4/`, `8.5/`, `8.6/`)
    - Multi-stage build: first stage builds Caddy with custom modules, second stage sets up PHP-FPM
    - Process management via Supervisor (runs both PHP-FPM and Caddy)
    - Caddy modules: `caddy-ratelimit`, `caddy-storage-redis`, `caddy-jwt`
 
-2. **FrankenPHP** (directories: `8.4-frankenphp/`, `8.5-frankenphp/`)
+2. **FrankenPHP** (directories: `8.4-frankenphp/`, `8.5-frankenphp/`, `8.5-www/`, `8.6-frankenphp/`, `8.6-www/`)
    - Single binary combining PHP and HTTP server
-   - Uses `dunglas/frankenphp` base image
+   - Up to 8.5: uses the `dunglas/frankenphp` base image (`*-www` rebuilds the binary with extra Caddy modules)
+   - 8.6: no `dunglas/frankenphp` PHP 8.6 images exist, so FrankenPHP is compiled from source on
+     `php:8.6.*-cli-trixie` (all PHP 8.6 official images are ZTS; the `-zts` tag was dropped)
    - Custom `docker-entrypoint.sh` for initialization
 
 ### Directory Structure Pattern
@@ -59,13 +61,13 @@ PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"  # PHP config scan directory
 
 `amqp apcu ast bcmath exif ffi gd gettext gmp igbinary imagick intl maxminddb mongodb opcache pcntl pdo_mysql pdo_pgsql redis sockets sysvmsg sysvsem sysvshm uuid xsl zip grpc protobuf`
 
-Note: `grpc` is excluded from PHP 8.5 FrankenPHP due to compatibility issues.
+Note: `grpc` is excluded from the PHP 8.5/8.6 FrankenPHP images (`-frankenphp`) due to compatibility issues.
 
 ## CI/CD
 
 GitHub Actions workflow (`.github/workflows/build-and-push.yml`) builds multi-arch images:
 
-- **Active versions:** 8.4, 8.4-frankenphp, 8.5, 8.5-frankenphp
+- **Active versions:** 8.5, 8.5-frankenphp, 8.5-www, 8.6, 8.6-frankenphp, 8.6-www
 - **Architectures:** AMD64 + ARM64
 - **Output tags:** `ghcr.io/sctr/docker-symfony:{version}[-{arch}]`
 

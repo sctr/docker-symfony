@@ -1,5 +1,5 @@
 #!/bin/sh
-# Usage: sh scripts/test-image.sh IMAGE 8.5|8.5-www|8.5-frankenphp
+# Usage: sh scripts/test-image.sh IMAGE 8.5|8.5-www|8.5-frankenphp|8.6|8.6-www|8.6-frankenphp
 set -eu
 
 docker run --rm --network none --read-only "$1" php -v
@@ -22,7 +22,12 @@ docker run --rm --network none --read-only --tmpfs /tmp:exec --entrypoint sh "$1
         $image->writeImage("/tmp/imagick.png");
     '\''
     composer --version
-    if [ "$1" != "8.5-www" ]; then
+    case "$1" in
+        *-www) variant=www ;;
+        *-frankenphp) variant=frankenphp ;;
+        *) variant=fpm ;;
+    esac
+    if [ "$variant" != www ]; then
         test "$(dpkg-query -W -f '\''${db:Status-Status}'\'' libvips-dev 2>/dev/null || true)" != installed
         vips --version
         vips black /tmp/test.v 8 8
@@ -31,13 +36,13 @@ docker run --rm --network none --read-only --tmpfs /tmp:exec --entrypoint sh "$1
             vipsheader "/tmp/test.$format"
         done
     fi
-    if [ "$1" = "8.5" ]; then
+    if [ "$variant" = fpm ]; then
         php-fpm -t
         caddy list-modules | grep -q http.encoders.br
     else
         frankenphp list-modules > /tmp/modules
         modules="frankenphp http.encoders.br"
-        if [ "$1" = "8.5-www" ]; then
+        if [ "$variant" = www ]; then
             modules="$modules http.authentication.providers.jwt http.handlers.rate_limit caddy.storage.redis"
         fi
         for module in $modules; do

@@ -14,6 +14,9 @@ docker pull ghcr.io/sctr/docker-symfony:{tag}
 
 | Tag | Base | Description |
 |-----|------|-------------|
+| `8.6` | Debian + PHP-FPM + Caddy | PHP 8.6 (RC) with Caddy reverse proxy |
+| `8.6-frankenphp` | FrankenPHP (built from source) | PHP 8.6 (RC) with FrankenPHP (single binary) |
+| `8.6-www` | FrankenPHP (built from source) + Custom Caddy | PHP 8.6 (RC) FrankenPHP with Caddy modules (ratelimit, redis, jwt) |
 | `8.5` | Debian + PHP-FPM + Caddy | PHP 8.5 with Caddy reverse proxy |
 | `8.5-frankenphp` | FrankenPHP | PHP 8.5 with FrankenPHP (single binary) |
 | `8.5-www` | FrankenPHP + Custom Caddy | PHP 8.5 FrankenPHP with Caddy modules (ratelimit, redis, jwt) |
@@ -79,6 +82,28 @@ stages. To run the image smoke checks locally:
 sh scripts/test-image.sh docker-symfony:8.5 8.5
 sh scripts/test-image.sh docker-symfony:8.5-www 8.5-www
 sh scripts/test-image.sh docker-symfony:8.5-frankenphp 8.5-frankenphp
+```
+
+### PHP 8.6 images
+
+The 8.6 images track the PHP 8.6 release candidates (currently `8.6.0RC4`) until 8.6.0 is
+released; bump `PHP_VERSION` in the three 8.6 Dockerfiles to follow new releases.
+
+They mirror the 8.5 images (same extensions, ini files, entrypoints and Caddy modules), except:
+
+- Since PHP 8.6 the official `php` images are all built as ZTS with the embed SAPI, and the
+  separate `-zts` tag no longer exists, so `8.6-frankenphp` and `8.6-www` are based on
+  `php:8.6.*-cli-trixie`.
+- FrankenPHP does not publish PHP 8.6 images yet, so both FrankenPHP variants compile
+  FrankenPHP (`FRANKENPHP_VERSION`) and e-dant/watcher (`WATCHER_VERSION`) in a builder stage,
+  following the upstream FrankenPHP Dockerfile. `8.6-frankenphp` includes the same Caddy modules
+  as the upstream binary (Mercure, Vulcain, brotli). `8.6-www` adds the jwt, ratelimit and
+  redis storage modules through xcaddy, as `8.5-www` does.
+
+```bash
+sh scripts/test-image.sh docker-symfony:8.6 8.6
+sh scripts/test-image.sh docker-symfony:8.6-www 8.6-www
+sh scripts/test-image.sh docker-symfony:8.6-frankenphp 8.6-frankenphp
 ```
 
 ## Useful Links

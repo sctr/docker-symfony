@@ -8,8 +8,8 @@ docker run --rm --network none --read-only --tmpfs /tmp:exec --entrypoint sh "$1
     php -r '\''
         // redis is built separately on PHP 8.6 (scripts/install-phpredis.sh).
         foreach ([...explode(" ", getenv("EXTENSIONS")), "redis"] as $extension) {
-            // GitHub sources: "vendor/php-ext-name@ref" loads as "name".
-            $extension = preg_replace("~^.*/(php-ext-)?|@.*$~", "", $extension);
+            // GitHub sources: "vendor/php-ext-name@ref" or "vendor/php-name@ref" loads as "name".
+            $extension = preg_replace("~^.*/(php-ext-|php-)?|@.*$~", "", $extension);
             if (!extension_loaded($extension === "opcache" ? "Zend OPcache" : $extension)) {
                 throw new RuntimeException("Missing extension: " . $extension);
             }

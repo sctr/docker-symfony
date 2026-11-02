@@ -63,8 +63,9 @@ PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"  # PHP config scan directory
 
 Note: `grpc` is excluded from the PHP 8.5/8.6 FrankenPHP images (`-frankenphp`) due to compatibility issues.
 
-PHP 8.6 images: `amqp`, `protobuf` and `grpc` are excluded (no upstream code compiles on 8.6 yet); `apcu`,
-`igbinary` and `imagick` are built from pinned upstream commits and `redis` via `scripts/install-phpredis.sh`.
+PHP 8.6 images: `protobuf` and `grpc` are excluded (no upstream code compiles on 8.6 yet); `apcu`,
+`igbinary` and `imagick` are built from pinned upstream commits, `amqp` from the `sctr/php-amqp` fork
+(`php-8.6-support`, proposed upstream) and `redis` via `scripts/install-phpredis.sh`.
 See the README's "PHP 8.6 images" section.
 
 ## CI/CD

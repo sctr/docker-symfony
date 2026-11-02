@@ -14,9 +14,9 @@ docker pull ghcr.io/sctr/docker-symfony:{tag}
 
 | Tag | Base | Description |
 |-----|------|-------------|
-| `8.6` | Debian + PHP-FPM + Caddy | PHP 8.6 (RC) with Caddy reverse proxy, without amqp/grpc/protobuf (see below) |
-| `8.6-frankenphp` | FrankenPHP (built from source) | PHP 8.6 (RC) with FrankenPHP (single binary), without amqp/protobuf (see below) |
-| `8.6-www` | FrankenPHP (built from source) + Custom Caddy | PHP 8.6 (RC) FrankenPHP with Caddy modules (ratelimit, redis, jwt), without amqp/grpc/protobuf (see below) |
+| `8.6` | Debian + PHP-FPM + Caddy | PHP 8.6 (RC) with Caddy reverse proxy, without grpc/protobuf (see below) |
+| `8.6-frankenphp` | FrankenPHP (built from source) | PHP 8.6 (RC) with FrankenPHP (single binary) (see below) |
+| `8.6-www` | FrankenPHP (built from source) + Custom Caddy | PHP 8.6 (RC) FrankenPHP with Caddy modules (ratelimit, redis, jwt), without grpc/protobuf (see below) |
 | `8.5` | Debian + PHP-FPM + Caddy | PHP 8.5 with Caddy reverse proxy |
 | `8.5-frankenphp` | FrankenPHP | PHP 8.5 with FrankenPHP (single binary) |
 | `8.5-www` | FrankenPHP + Custom Caddy | PHP 8.5 FrankenPHP with Caddy modules (ratelimit, redis, jwt) |
@@ -98,7 +98,10 @@ They mirror the 8.5 images (same ini files, entrypoints and Caddy modules), exce
     upstream commits listed in `EXTENSIONS`;
   - `redis` is built from a pinned phpredis commit by `scripts/install-phpredis.sh` (`PHPREDIS_REF`),
     because its GitHub source lacks the `liblzf` submodule that `install-php-extensions` needs;
-  - **`amqp`, `protobuf` and `grpc` are not included**: no upstream code compiles on PHP 8.6 yet.
+  - `amqp` is built from the [`sctr/php-amqp`](https://github.com/sctr/php-amqp) fork
+    (`php-8.6-support` branch), which adds PHP 8.6 support and is proposed upstream to
+    php-amqp/php-amqp;
+  - **`protobuf` and `grpc` are not included**: no upstream code compiles on PHP 8.6 yet.
 
   Switch back to the PECL releases, and restore the missing extensions (and `10-grpc.ini`), once
   releases support 8.6.

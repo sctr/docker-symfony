@@ -86,7 +86,11 @@ ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
 ENV XDG_CONFIG_HOME=/config XDG_DATA_HOME=/data
 ENV GODEBUG=cgocheck=0
 
-ENV EXTENSIONS="amqp apcu ast bcmath exif gd gettext gmp igbinary imagick intl opcache pcntl redis mongodb sockets sysvmsg sysvsem sysvshm uuid xsl zip grpc protobuf opentelemetry zstd symfony/php-ext-deepclone@v0.8.9"
+# PHP 8.6 removed internal C APIs (XtOffsetOf, zval_dtor, INI_STR/INT/FLT, ...). Until PECL releases
+# support 8.6: apcu (5.1.29 release commit, not on PECL), igbinary and imagick are built from pinned
+# upstream commits, redis is built by scripts/install-phpredis.sh, and amqp, protobuf and grpc are
+# left out because no upstream code compiles on 8.6 yet.
+ENV EXTENSIONS="krakjoe/apcu@66300e28647c16fef7672a5add532f4262b23a75 ast bcmath exif gd gettext gmp igbinary/igbinary@2b1f5d62e3037b07c2a46499ac32091cdb41fb40 Imagick/imagick@55ed2e9fda264395636a2e27e51f31673f5566ab intl opcache pcntl mongodb sockets sysvmsg sysvsem sysvshm uuid xsl zip opentelemetry zstd symfony/php-ext-deepclone@v0.8.9"
 
 WORKDIR /app
 
@@ -126,6 +130,10 @@ EXPOSE 2019
 
 # Install PHP extensions
 RUN set -eux; install-php-extensions $EXTENSIONS
+
+ARG PHPREDIS_REF=671e726e7d87916ffc1c8c8dbbb20c355bcd731a
+COPY --chmod=755 scripts/install-phpredis.sh /tmp/install-phpredis.sh
+RUN /tmp/install-phpredis.sh ${PHPREDIS_REF} && rm /tmp/install-phpredis.sh
 
 # Keep frequently changing binaries and startup code after dependency installation.
 COPY --from=builder /usr/local/lib/libwatcher* /usr/local/lib/

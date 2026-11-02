@@ -14,9 +14,9 @@ docker pull ghcr.io/sctr/docker-symfony:{tag}
 
 | Tag | Base | Description |
 |-----|------|-------------|
-| `8.6` | Debian + PHP-FPM + Caddy | PHP 8.6 (RC) with Caddy reverse proxy |
-| `8.6-frankenphp` | FrankenPHP (built from source) | PHP 8.6 (RC) with FrankenPHP (single binary) |
-| `8.6-www` | FrankenPHP (built from source) + Custom Caddy | PHP 8.6 (RC) FrankenPHP with Caddy modules (ratelimit, redis, jwt) |
+| `8.6` | Debian + PHP-FPM + Caddy | PHP 8.6 (RC) with Caddy reverse proxy, without amqp/grpc/protobuf (see below) |
+| `8.6-frankenphp` | FrankenPHP (built from source) | PHP 8.6 (RC) with FrankenPHP (single binary), without amqp/protobuf (see below) |
+| `8.6-www` | FrankenPHP (built from source) + Custom Caddy | PHP 8.6 (RC) FrankenPHP with Caddy modules (ratelimit, redis, jwt), without amqp/grpc/protobuf (see below) |
 | `8.5` | Debian + PHP-FPM + Caddy | PHP 8.5 with Caddy reverse proxy |
 | `8.5-frankenphp` | FrankenPHP | PHP 8.5 with FrankenPHP (single binary) |
 | `8.5-www` | FrankenPHP + Custom Caddy | PHP 8.5 FrankenPHP with Caddy modules (ratelimit, redis, jwt) |
@@ -89,7 +89,19 @@ sh scripts/test-image.sh docker-symfony:8.5-frankenphp 8.5-frankenphp
 The 8.6 images track the PHP 8.6 release candidates (currently `8.6.0RC4`) until 8.6.0 is
 released; bump `PHP_VERSION` in the three 8.6 Dockerfiles to follow new releases.
 
-They mirror the 8.5 images (same extensions, ini files, entrypoints and Caddy modules), except:
+They mirror the 8.5 images (same ini files, entrypoints and Caddy modules), except:
+
+- **Extensions:** PHP 8.6 removed internal C APIs (`XtOffsetOf()`, `zval_dtor()`, `INI_STR/INT/FLT`,
+  `zval_is_true()`, the `php_verror()` `param` argument), and several PECL extensions have no
+  8.6-compatible release yet. Until they do:
+  - `apcu` (5.1.29 release commit, not yet on PECL), `igbinary` and `imagick` are built from pinned
+    upstream commits listed in `EXTENSIONS`;
+  - `redis` is built from a pinned phpredis commit by `scripts/install-phpredis.sh` (`PHPREDIS_REF`),
+    because its GitHub source lacks the `liblzf` submodule that `install-php-extensions` needs;
+  - **`amqp`, `protobuf` and `grpc` are not included**: no upstream code compiles on PHP 8.6 yet.
+
+  Switch back to the PECL releases, and restore the missing extensions (and `10-grpc.ini`), once
+  releases support 8.6.
 
 - Since PHP 8.6 the official `php` images are all built as ZTS with the embed SAPI, and the
   separate `-zts` tag no longer exists, so `8.6-frankenphp` and `8.6-www` are based on

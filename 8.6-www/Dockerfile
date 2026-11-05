@@ -132,7 +132,7 @@ EXPOSE 2019
 # Install PHP extensions
 RUN set -eux; install-php-extensions $EXTENSIONS
 
-ARG PHPREDIS_REF=671e726e7d87916ffc1c8c8dbbb20c355bcd731a
+ARG PHPREDIS_REF=2ef32c5244f924fad4d7527e36f808e7b364f90f
 COPY --chmod=755 scripts/install-phpredis.sh /tmp/install-phpredis.sh
 RUN /tmp/install-phpredis.sh ${PHPREDIS_REF} && rm /tmp/install-phpredis.sh
 

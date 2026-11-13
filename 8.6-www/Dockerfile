@@ -1,6 +1,6 @@
 ARG CADDY_VERSION=2.11
-ARG FRANKENPHP_VERSION=1.13.4
-ARG PHP_VERSION=8.6.0RC4
+ARG FRANKENPHP_VERSION=1.13.5
+ARG PHP_VERSION=8.6.0RC5
 ARG GO_VERSION=1.27
 ARG WATCHER_VERSION=0.14.5
 
@@ -70,6 +70,7 @@ RUN CGO_ENABLED=1 \
     --with github.com/ggicci/caddy-jwt@28e0de3db362a787564352ec22e97aa743a371f3 \
     --with github.com/mholt/caddy-ratelimit@v0.1.0 \
     --with github.com/pberkel/caddy-storage-redis@v1.7.0 \
+    && setcap cap_net_bind_service=+ep /usr/local/bin/frankenphp \
     && frankenphp version
 
 # -----------------------------------------------------
@@ -109,7 +110,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         unzip \
         zip \
         imagemagick \
-        webp \
         gifsicle \
         jpegoptim \
         optipng \
@@ -117,6 +117,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libnss3-tools \
         mailcap \
         libcap2-bin \
+        # Runtime libraries of the webp tools unpacked below
+        libgif7 libjpeg62-turbo libpng16-16t64 libsharpyuv0 libtiff6 libwebp7 libwebpdemux2 libwebpmux3 \
+    # The webp package depends on OpenGL (~200 MB of Mesa and LLVM) only for its vwebp viewer:
+    # unpack its command-line tools instead of installing it.
+    && cd /tmp && apt-get download webp \
+    && dpkg-deb --fsys-tarfile webp_*.deb | tar -x -C / \
+        ./usr/bin/cwebp ./usr/bin/dwebp ./usr/bin/gif2webp ./usr/bin/img2webp ./usr/bin/webpinfo ./usr/bin/webpmux \
+    && rm webp_*.deb \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Same layout as the upstream FrankenPHP image
@@ -132,15 +140,16 @@ EXPOSE 2019
 # Install PHP extensions
 RUN set -eux; install-php-extensions $EXTENSIONS
 
-ARG PHPREDIS_REF=2ef32c5244f924fad4d7527e36f808e7b364f90f
+ARG PHPREDIS_REF=623e8db5a39657ba7218ceea81ab8338d248b036
 COPY --chmod=755 scripts/install-phpredis.sh /tmp/install-phpredis.sh
 RUN /tmp/install-phpredis.sh ${PHPREDIS_REF} && rm /tmp/install-phpredis.sh
 
 # Keep frequently changing binaries and startup code after dependency installation.
 COPY --from=builder /usr/local/lib/libwatcher* /usr/local/lib/
 COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
+# The builder stage sets cap_net_bind_service, which COPY keeps: running setcap here would
+# rewrite the binary into another layer and store it twice.
 RUN ldconfig \
-    && setcap cap_net_bind_service=+ep /usr/local/bin/frankenphp \
     && frankenphp version
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 COPY --link --chmod=755 ./8.6-www/docker-entrypoint.sh /usr/local/bin/docker-entrypoint

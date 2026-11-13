@@ -86,7 +86,7 @@ sh scripts/test-image.sh docker-symfony:8.5-frankenphp 8.5-frankenphp
 
 ### PHP 8.6 images
 
-The 8.6 images track the PHP 8.6 release candidates (currently `8.6.0RC4`) until 8.6.0 is
+The 8.6 images track the PHP 8.6 release candidates (currently `8.6.0RC5`) until 8.6.0 is
 released; bump `PHP_VERSION` in the three 8.6 Dockerfiles to follow new releases.
 
 They mirror the 8.5 images (same ini files, entrypoints and Caddy modules), except:
@@ -113,7 +113,12 @@ They mirror the 8.5 images (same ini files, entrypoints and Caddy modules), exce
   FrankenPHP (`FRANKENPHP_VERSION`) and e-dant/watcher (`WATCHER_VERSION`) in a builder stage,
   following the upstream FrankenPHP Dockerfile. `8.6-frankenphp` includes the same Caddy modules
   as the upstream binary (Mercure, Vulcain, brotli). `8.6-www` adds the jwt, ratelimit and
-  redis storage modules through xcaddy, as `8.5-www` does.
+  redis storage modules through xcaddy, as `8.5-www` does. The builder stage sets the
+  `cap_net_bind_service` capability, which `COPY` keeps, so the binary is stored only once.
+- The webp command-line tools (`cwebp`, `dwebp`, `gif2webp`, `img2webp`, `webpinfo`, `webpmux`) are
+  unpacked from Debian's `webp` package without installing it: the package depends on OpenGL
+  only for its `vwebp` viewer, which pulls in about 200 MB of Mesa and LLVM libraries. `vwebp` is
+  not included.
 
 ```bash
 sh scripts/test-image.sh docker-symfony:8.6 8.6

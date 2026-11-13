@@ -1,5 +1,5 @@
-ARG PHP_VERSION=8.6.0RC4
-ARG FRANKENPHP_VERSION=1.13.4
+ARG PHP_VERSION=8.6.0RC5
+ARG FRANKENPHP_VERSION=1.13.5
 ARG GO_VERSION=1.27
 ARG WATCHER_VERSION=0.14.5
 
@@ -60,6 +60,7 @@ ENV CGO_LDFLAGS="-L/usr/local/lib -lssl -lcrypto -lreadline -largon2 -lcurl -lon
 WORKDIR /go/src/app/caddy/frankenphp
 RUN GOBIN=/usr/local/bin \
     ../../go.sh install -ldflags "-w -s -X 'github.com/caddyserver/caddy/v2.CustomVersion=FrankenPHP v$FRANKENPHP_VERSION PHP $PHP_VERSION Caddy' -X 'github.com/caddyserver/caddy/v2.CustomBinaryName=frankenphp' -X 'github.com/caddyserver/caddy/v2/modules/caddyhttp.ServerHeader=FrankenPHP Caddy'" -buildvcs=false \
+    && setcap cap_net_bind_service=+ep /usr/local/bin/frankenphp \
     && frankenphp version \
     && frankenphp build-info
 
@@ -100,7 +101,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         unzip \
         zip \
         imagemagick \
-        webp \
         gifsicle \
         jpegoptim \
         optipng \
@@ -108,6 +108,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libnss3-tools \
         mailcap \
         libcap2-bin \
+        # Runtime libraries of the webp tools unpacked below
+        libgif7 libjpeg62-turbo libpng16-16t64 libsharpyuv0 libtiff6 libwebp7 libwebpdemux2 libwebpmux3 \
+    # The webp package depends on OpenGL (~200 MB of Mesa and LLVM) only for its vwebp viewer:
+    # unpack its command-line tools instead of installing it.
+    && cd /tmp && apt-get download webp \
+    && dpkg-deb --fsys-tarfile webp_*.deb | tar -x -C / \
+        ./usr/bin/cwebp ./usr/bin/dwebp ./usr/bin/gif2webp ./usr/bin/img2webp ./usr/bin/webpinfo ./usr/bin/webpmux \
+    && rm webp_*.deb \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Same layout as the upstream FrankenPHP image
@@ -132,15 +140,16 @@ RUN /tmp/install-libvips.sh ${VIPS_VERSION} && rm /tmp/install-libvips.sh
 # Install PHP extensions
 RUN set -eux; install-php-extensions $EXTENSIONS
 
-ARG PHPREDIS_REF=2ef32c5244f924fad4d7527e36f808e7b364f90f
+ARG PHPREDIS_REF=623e8db5a39657ba7218ceea81ab8338d248b036
 COPY --chmod=755 scripts/install-phpredis.sh /tmp/install-phpredis.sh
 RUN /tmp/install-phpredis.sh ${PHPREDIS_REF} && rm /tmp/install-phpredis.sh
 
 # Keep frequently changing binaries and startup code after dependency installation.
 COPY --from=builder /usr/local/lib/libwatcher* /usr/local/lib/
 COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
+# The builder stage sets cap_net_bind_service, which COPY keeps: running setcap here would
+# rewrite the binary into another layer and store it twice.
 RUN ldconfig \
-    && setcap cap_net_bind_service=+ep /usr/local/bin/frankenphp \
     && frankenphp version
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 COPY --link --chmod=755 ./8.6-frankenphp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint

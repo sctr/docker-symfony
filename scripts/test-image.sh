@@ -23,6 +23,12 @@ docker run --rm --network none --read-only --tmpfs /tmp:exec --entrypoint sh "$1
         $image->writeImage("/tmp/imagick.png");
     '\''
     composer --version
+    # Image optimization tools (webp tools are unpacked without the webp package on 8.6).
+    for tool in jpegoptim optipng pngquant gifsicle cwebp dwebp gif2webp img2webp webpinfo webpmux; do
+        command -v "$tool" > /dev/null
+    done
+    cwebp -quiet /tmp/imagick.png -o /tmp/cwebp.webp
+    dwebp -quiet /tmp/cwebp.webp -o /tmp/dwebp.png
     case "$1" in
         *-www) variant=www ;;
         *-frankenphp) variant=frankenphp ;;
@@ -49,6 +55,7 @@ docker run --rm --network none --read-only --tmpfs /tmp:exec --entrypoint sh "$1
         for module in $modules; do
             grep -qx "$module" /tmp/modules
         done
+        getcap /usr/local/bin/frankenphp | grep -q cap_net_bind_service
 
         # Exercise startup with no network and stub only the external commands.
         mkdir -p /tmp/bin /tmp/app

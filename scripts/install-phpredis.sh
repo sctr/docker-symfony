@@ -30,6 +30,7 @@ phpize
     --with-liblz4
 make -j"$(nproc)"
 make install
+strip --strip-unneeded "$(php-config --extension-dir)/redis.so"
 docker-php-ext-enable redis
 
 # Remove build dependencies, keeping the runtime libraries the extension links against.

@@ -14,6 +14,9 @@ docker pull ghcr.io/sctr/docker-symfony:{tag}
 
 | Tag | Base | Description |
 |-----|------|-------------|
+| `8.6` | Debian + PHP-FPM + Caddy | PHP 8.6 (RC) with Caddy reverse proxy, without grpc/protobuf (see below) |
+| `8.6-frankenphp` | FrankenPHP (built from source) | PHP 8.6 (RC) with FrankenPHP (single binary) (see below) |
+| `8.6-www` | FrankenPHP (built from source) + Custom Caddy | PHP 8.6 (RC) FrankenPHP with Caddy modules (ratelimit, redis, jwt), without grpc/protobuf (see below) |
 | `8.5` | Debian + PHP-FPM + Caddy | PHP 8.5 with Caddy reverse proxy |
 | `8.5-frankenphp` | FrankenPHP | PHP 8.5 with FrankenPHP (single binary) |
 | `8.5-www` | FrankenPHP + Custom Caddy | PHP 8.5 FrankenPHP with Caddy modules (ratelimit, redis, jwt) |
@@ -79,6 +82,48 @@ stages. To run the image smoke checks locally:
 sh scripts/test-image.sh docker-symfony:8.5 8.5
 sh scripts/test-image.sh docker-symfony:8.5-www 8.5-www
 sh scripts/test-image.sh docker-symfony:8.5-frankenphp 8.5-frankenphp
+```
+
+### PHP 8.6 images
+
+The 8.6 images track the PHP 8.6 release candidates (currently `8.6.0RC5`) until 8.6.0 is
+released; bump `PHP_VERSION` in the three 8.6 Dockerfiles to follow new releases.
+
+They mirror the 8.5 images (same ini files, entrypoints and Caddy modules), except:
+
+- **Extensions:** PHP 8.6 removed internal C APIs (`XtOffsetOf()`, `zval_dtor()`, `INI_STR/INT/FLT`,
+  `zval_is_true()`, the `php_verror()` `param` argument), and several PECL extensions have no
+  8.6-compatible release yet. Until they do:
+  - `apcu` (5.1.29 release commit, not yet on PECL), `igbinary` and `imagick` are built from pinned
+    upstream commits listed in `EXTENSIONS`;
+  - `redis` is built from a pinned phpredis commit by `scripts/install-phpredis.sh` (`PHPREDIS_REF`),
+    because its GitHub source lacks the `liblzf` submodule that `install-php-extensions` needs;
+  - `amqp` is built from the [`sctr/php-amqp`](https://github.com/sctr/php-amqp) fork
+    (`php-8.6-support` branch), which adds PHP 8.6 support and is proposed upstream to
+    php-amqp/php-amqp;
+  - **`protobuf` and `grpc` are not included**: no upstream code compiles on PHP 8.6 yet.
+
+  Switch back to the PECL releases, and restore the missing extensions (and `10-grpc.ini`), once
+  releases support 8.6.
+
+- Since PHP 8.6 the official `php` images are all built as ZTS with the embed SAPI, and the
+  separate `-zts` tag no longer exists, so `8.6-frankenphp` and `8.6-www` are based on
+  `php:8.6.*-cli-trixie`.
+- FrankenPHP does not publish PHP 8.6 images yet, so both FrankenPHP variants compile
+  FrankenPHP (`FRANKENPHP_VERSION`) and e-dant/watcher (`WATCHER_VERSION`) in a builder stage,
+  following the upstream FrankenPHP Dockerfile. `8.6-frankenphp` includes the same Caddy modules
+  as the upstream binary (Mercure, Vulcain, brotli). `8.6-www` adds the jwt, ratelimit and
+  redis storage modules through xcaddy, as `8.5-www` does. The builder stage sets the
+  `cap_net_bind_service` capability, which `COPY` keeps, so the binary is stored only once.
+- The webp command-line tools (`cwebp`, `dwebp`, `gif2webp`, `img2webp`, `webpinfo`, `webpmux`) are
+  unpacked from Debian's `webp` package without installing it: the package depends on OpenGL
+  only for its `vwebp` viewer, which pulls in about 200 MB of Mesa and LLVM libraries. `vwebp` is
+  not included.
+
+```bash
+sh scripts/test-image.sh docker-symfony:8.6 8.6
+sh scripts/test-image.sh docker-symfony:8.6-www 8.6-www
+sh scripts/test-image.sh docker-symfony:8.6-frankenphp 8.6-frankenphp
 ```
 
 ## Useful Links

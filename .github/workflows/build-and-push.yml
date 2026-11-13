@@ -20,6 +20,9 @@ jobs:
                     - '8.5'
                     - '8.5-frankenphp'
                     - '8.5-www'
+                    - '8.6'
+                    - '8.6-frankenphp'
+                    - '8.6-www'
         runs-on: ubuntu-24.04
         steps:
             - name: Checkout
@@ -63,6 +66,9 @@ jobs:
                     - '8.5'
                     - '8.5-frankenphp'
                     - '8.5-www'
+                    - '8.6'
+                    - '8.6-frankenphp'
+                    - '8.6-www'
         runs-on: ubuntu-24.04-arm
         steps:
             - name: Checkout
@@ -108,6 +114,9 @@ jobs:
                     - '8.5'
                     - '8.5-frankenphp'
                     - '8.5-www'
+                    - '8.6'
+                    - '8.6-frankenphp'
+                    - '8.6-www'
         runs-on: ubuntu-24.04
         steps:
             - name: Checkout

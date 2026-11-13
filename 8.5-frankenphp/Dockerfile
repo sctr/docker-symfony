@@ -31,6 +31,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libnss3-tools \
 	&& rm -rf /var/lib/apt/lists/*
 
+# Install PHP extensions
+RUN set -eux; install-php-extensions $EXTENSIONS
+
 # Install latest libvips
 # @see https://github.com/dooman87/imagemagick-docker/blob/main/Dockerfile.bookworm
 ARG VIPS_VERSION=8.18.7
@@ -39,9 +42,6 @@ ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
 
 COPY --chmod=755 scripts/install-libvips.sh /tmp/install-libvips.sh
 RUN /tmp/install-libvips.sh ${VIPS_VERSION} && rm /tmp/install-libvips.sh
-
-# Install PHP extensions
-RUN set -eux; install-php-extensions $EXTENSIONS
 
 # Keep frequently changing binaries and startup code after dependency installation.
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer

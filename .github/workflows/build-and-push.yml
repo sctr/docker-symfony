@@ -20,7 +20,7 @@ jobs:
                     - '8.5'
                     - '8.5-frankenphp'
                     - '8.5-www'
-        runs-on: ubuntu-24.04
+        runs-on: blacksmith-4vcpu-ubuntu-2404
         steps:
             - name: Checkout
               uses: actions/checkout@v7
@@ -63,7 +63,7 @@ jobs:
                     - '8.5'
                     - '8.5-frankenphp'
                     - '8.5-www'
-        runs-on: ubuntu-24.04-arm
+        runs-on: blacksmith-4vcpu-ubuntu-2404-arm
         steps:
             - name: Checkout
               uses: actions/checkout@v7
@@ -108,7 +108,7 @@ jobs:
                     - '8.5'
                     - '8.5-frankenphp'
                     - '8.5-www'
-        runs-on: ubuntu-24.04
+        runs-on: blacksmith-2vcpu-ubuntu-2404
         steps:
             - name: Checkout
               uses: actions/checkout@v7

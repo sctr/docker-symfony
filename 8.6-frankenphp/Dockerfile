@@ -1,4 +1,4 @@
-ARG PHP_VERSION=8.6.0RC5
+ARG PHP_VERSION=8.6.0RC7
 ARG FRANKENPHP_VERSION=1.13.5
 ARG GO_VERSION=1.27
 ARG WATCHER_VERSION=0.14.5
@@ -83,7 +83,7 @@ ENV GODEBUG=cgocheck=0
 # upstream commits, amqp from the sctr/php-amqp fork (php-8.6-support branch, pending upstream),
 # redis by scripts/install-phpredis.sh, and protobuf and grpc are left out because no upstream code
 # compiles on 8.6 yet.
-ENV EXTENSIONS="sctr/php-amqp@7a4318b41915d8957ab207de43783d94db25aa25 krakjoe/apcu@66300e28647c16fef7672a5add532f4262b23a75 ast bcmath exif ffi gd gettext gmp igbinary/igbinary@2b1f5d62e3037b07c2a46499ac32091cdb41fb40 Imagick/imagick@55ed2e9fda264395636a2e27e51f31673f5566ab intl maxminddb mongodb opcache pcntl pdo_mysql pdo_pgsql sockets sysvmsg sysvsem sysvshm uuid xsl zip opentelemetry zstd symfony/php-ext-deepclone@v0.8.9"
+ENV EXTENSIONS="sctr/php-amqp@7a4318b41915d8957ab207de43783d94db25aa25 krakjoe/apcu@66300e28647c16fef7672a5add532f4262b23a75 ast bcmath exif ffi gd gettext gmp igbinary/igbinary@2b1f5d62e3037b07c2a46499ac32091cdb41fb40 Imagick/imagick@55ed2e9fda264395636a2e27e51f31673f5566ab intl maxminddb mongodb opcache pcntl pdo_mysql pdo_pgsql sockets sysvmsg sysvsem sysvshm uuid xsl zip opentelemetry zstd symfony/php-ext-deepclone@v0.8.10"
 
 WORKDIR /app
 

@@ -59,13 +59,13 @@ PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"  # PHP config scan directory
 
 ### PHP Extensions (common across versions)
 
-`amqp apcu ast bcmath exif ffi gd gettext gmp igbinary imagick intl maxminddb mongodb opcache pcntl pdo_mysql pdo_pgsql redis sockets sysvmsg sysvsem sysvshm uuid xsl zip grpc protobuf`
+`amqp apcu ast bcmath exif ffi gd gettext gmp igbinary imagick intl maxminddb mongodb opcache pcntl pdo_mysql pdo_pgsql redis sockets sysvmsg sysvsem sysvshm uuid xsl zip protobuf`
 
-Note: `grpc` is excluded from the PHP 8.5/8.6 FrankenPHP images (`-frankenphp`) due to compatibility issues.
+Note: `grpc` is no longer included in the 8.5 and 8.6 images.
 
-PHP 8.6 images: `protobuf` and `grpc` are excluded (no upstream code compiles on 8.6 yet); `apcu`,
+PHP 8.6 images: `protobuf` is excluded (no upstream code compiles on 8.6 yet); `apcu`,
 `igbinary` and `imagick` are built from pinned upstream commits, `amqp` from the `sctr/php-amqp` fork
-(`php-8.6-support`, proposed upstream) and `redis` via `scripts/install-phpredis.sh`.
+(`php-8.6-support`, same fix as upstream PR php-amqp/php-amqp#638) and `redis` via `scripts/install-phpredis.sh`.
 See the README's "PHP 8.6 images" section.
 
 ## CI/CD

@@ -14,9 +14,9 @@ docker pull ghcr.io/sctr/docker-symfony:{tag}
 
 | Tag | Base | Description |
 |-----|------|-------------|
-| `8.6` | Debian + PHP-FPM + Caddy | PHP 8.6 (RC) with Caddy reverse proxy, without grpc/protobuf (see below) |
+| `8.6` | Debian + PHP-FPM + Caddy | PHP 8.6 (RC) with Caddy reverse proxy, without protobuf (see below) |
 | `8.6-frankenphp` | FrankenPHP (built from source) | PHP 8.6 (RC) with FrankenPHP (single binary) (see below) |
-| `8.6-www` | FrankenPHP (built from source) + Custom Caddy | PHP 8.6 (RC) FrankenPHP with Caddy modules (ratelimit, redis, jwt), without grpc/protobuf (see below) |
+| `8.6-www` | FrankenPHP (built from source) + Custom Caddy | PHP 8.6 (RC) FrankenPHP with Caddy modules (ratelimit, redis, jwt), without protobuf (see below) |
 | `8.5` | Debian + PHP-FPM + Caddy | PHP 8.5 with Caddy reverse proxy |
 | `8.5-frankenphp` | FrankenPHP | PHP 8.5 with FrankenPHP (single binary) |
 | `8.5-www` | FrankenPHP + Custom Caddy | PHP 8.5 FrankenPHP with Caddy modules (ratelimit, redis, jwt) |
@@ -39,7 +39,7 @@ Architecture-specific tags are also available: `8.4-amd64`, `8.4-arm64`, etc.
 - **Web Servers:** Caddy with custom modules (rate limiting, Redis storage, JWT auth) or FrankenPHP
 - **Process Management:** Supervisor for multi-process orchestration
 - **Image Processing:** ImageMagick 7, libvips 8.18, jpegoptim, optipng, pngquant, gifsicle, webp
-- **PHP Extensions:** amqp, apcu, bcmath, gd, grpc, imagick, intl, mongodb, opcache, pdo_mysql, pdo_pgsql, redis, uuid, and more
+- **PHP Extensions:** amqp, apcu, bcmath, gd, imagick, intl, mongodb, opcache, pdo_mysql, pdo_pgsql, redis, uuid, and more
 
 ## Usage
 
@@ -99,11 +99,12 @@ They mirror the 8.5 images (same ini files, entrypoints and Caddy modules), exce
   - `redis` is built from a pinned phpredis commit by `scripts/install-phpredis.sh` (`PHPREDIS_REF`),
     because its GitHub source lacks the `liblzf` submodule that `install-php-extensions` needs;
   - `amqp` is built from the [`sctr/php-amqp`](https://github.com/sctr/php-amqp) fork
-    (`php-8.6-support` branch), which adds PHP 8.6 support and is proposed upstream to
-    php-amqp/php-amqp;
-  - **`protobuf` and `grpc` are not included**: no upstream code compiles on PHP 8.6 yet.
+    (`php-8.6-support` branch), which adds PHP 8.6 support with the same fix as the open upstream
+    PR [php-amqp/php-amqp#638](https://github.com/php-amqp/php-amqp/pull/638);
+  - **`protobuf` is not included**: no upstream code compiles on PHP 8.6 yet. (`grpc` is not
+    included either; it was also removed from the 8.5 images.)
 
-  Switch back to the PECL releases, and restore the missing extensions (and `10-grpc.ini`), once
+  Switch back to the PECL releases, and restore `protobuf`, once
   releases support 8.6.
 
 - Since PHP 8.6 the official `php` images are all built as ZTS with the embed SAPI, and the

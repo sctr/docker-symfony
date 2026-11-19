@@ -1,13 +1,10 @@
 #!/bin/sh
-# Usage: sh scripts/test-image.sh IMAGE 8.2|8.2-debian|8.3|8.4|8.5|8.5-www|8.5-frankenphp
+# Usage: sh scripts/test-image.sh IMAGE 8.5|8.5-www|8.5-frankenphp
 set -eu
 
 docker run --rm --network none --read-only "$1" php -v
 
 docker run --rm --network none --read-only --tmpfs /tmp:exec --entrypoint sh "$1" -eu -c '
-    # Legacy images (8.2-8.4) are PHP-FPM + Caddy; only 8.4 and 8.5 ship libvips.
-    case "$1" in *frankenphp|8.5-www) fpm=0 ;; *) fpm=1 ;; esac
-    case "$1" in 8.2*|8.3*|8.5-www) vips=0 ;; *) vips=1 ;; esac
     php -r '\''
         foreach (explode(" ", getenv("EXTENSIONS")) as $extension) {
             // GitHub sources: "vendor/php-ext-name@ref" loads as "name".
@@ -16,17 +13,16 @@ docker run --rm --network none --read-only --tmpfs /tmp:exec --entrypoint sh "$1
                 throw new RuntimeException("Missing extension: " . $extension);
             }
         }
-        // Older images misspell this ini key, so only 8.5 images enable it.
-        if (str_starts_with($argv[1], "8.5") && ini_get("opcache.enable_file_override") !== "1") {
+        if (ini_get("opcache.enable_file_override") !== "1") {
             throw new RuntimeException("OPcache file override is disabled");
         }
         $image = new Imagick();
         $image->newImage(8, 8, "white");
         $image->setImageFormat("png");
         $image->writeImage("/tmp/imagick.png");
-    '\'' "$1"
+    '\''
     composer --version
-    if [ "$vips" = 1 ]; then
+    if [ "$1" != "8.5-www" ]; then
         test "$(dpkg-query -W -f '\''${db:Status-Status}'\'' libvips-dev 2>/dev/null || true)" != installed
         vips --version
         vips black /tmp/test.v 8 8
@@ -35,12 +31,9 @@ docker run --rm --network none --read-only --tmpfs /tmp:exec --entrypoint sh "$1
             vipsheader "/tmp/test.$format"
         done
     fi
-    if [ "$fpm" = 1 ]; then
+    if [ "$1" = "8.5" ]; then
         php-fpm -t
-        caddy version
-        if [ "$1" = "8.5" ]; then
-            caddy list-modules | grep -q http.encoders.br
-        fi
+        caddy list-modules | grep -q http.encoders.br
     else
         frankenphp list-modules > /tmp/modules
         modules="frankenphp http.encoders.br"

@@ -1,4 +1,4 @@
-ARG PHP_VERSION=8.2.36
+ARG PHP_VERSION=8.2
 ARG CADDY_VERSION=2
 
 # -----------------------------------------------------
@@ -15,7 +15,7 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH xcaddy build
 # -----------------------------------------------------
 # App Itself
 # -----------------------------------------------------
-FROM php:$PHP_VERSION-fpm-bookworm
+FROM php:$PHP_VERSION-fpm-bullseye
 
 ARG PORT=9001
 ARG PUBLIC_DIR=public

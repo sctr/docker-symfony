@@ -86,8 +86,8 @@ sh scripts/test-image.sh docker-symfony:8.5-frankenphp 8.5-frankenphp
 
 ### PHP 8.6 images
 
-The 8.6 images track the PHP 8.6 release candidates (currently `8.6.0RC7`) until 8.6.0 is
-released; bump `PHP_VERSION` in the three 8.6 Dockerfiles to follow new releases.
+The 8.6 images use PHP 8.6.0; bump `PHP_VERSION` in the three 8.6 Dockerfiles to follow new
+releases.
 
 They mirror the 8.5 images (same ini files, entrypoints and Caddy modules), except:
 

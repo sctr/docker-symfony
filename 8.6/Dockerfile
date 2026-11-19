@@ -1,4 +1,4 @@
-ARG PHP_VERSION=8.6.0RC7
+ARG PHP_VERSION=8.6.0
 ARG CADDY_VERSION=2
 
 # -----------------------------------------------------

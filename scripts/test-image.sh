@@ -1,14 +1,15 @@
 #!/bin/sh
-# Usage: sh scripts/test-image.sh IMAGE 8.5|8.5-www|8.5-frankenphp
+# Usage: sh scripts/test-image.sh IMAGE 8.5|8.5-www|8.5-frankenphp|8.6|8.6-www|8.6-frankenphp
 set -eu
 
 docker run --rm --network none --read-only "$1" php -v
 
 docker run --rm --network none --read-only --tmpfs /tmp:exec --entrypoint sh "$1" -eu -c '
     php -r '\''
-        foreach (explode(" ", getenv("EXTENSIONS")) as $extension) {
-            // GitHub sources: "vendor/php-ext-name@ref" loads as "name".
-            $extension = preg_replace("~^.*/(php-ext-)?|@.*$~", "", $extension);
+        // redis is built separately on PHP 8.6 (scripts/install-phpredis.sh).
+        foreach ([...explode(" ", getenv("EXTENSIONS")), "redis"] as $extension) {
+            // GitHub sources: "vendor/php-ext-name@ref" or "vendor/php-name@ref" loads as "name".
+            $extension = preg_replace("~^.*/(php-ext-|php-)?|@.*$~", "", $extension);
             if (!extension_loaded($extension === "opcache" ? "Zend OPcache" : $extension)) {
                 throw new RuntimeException("Missing extension: " . $extension);
             }
@@ -22,7 +23,18 @@ docker run --rm --network none --read-only --tmpfs /tmp:exec --entrypoint sh "$1
         $image->writeImage("/tmp/imagick.png");
     '\''
     composer --version
-    if [ "$1" != "8.5-www" ]; then
+    # Image optimization tools (webp tools are unpacked without the webp package on 8.6).
+    for tool in jpegoptim optipng pngquant gifsicle cwebp dwebp gif2webp img2webp webpinfo webpmux; do
+        command -v "$tool" > /dev/null
+    done
+    cwebp -quiet /tmp/imagick.png -o /tmp/cwebp.webp
+    dwebp -quiet /tmp/cwebp.webp -o /tmp/dwebp.png
+    case "$1" in
+        *-www) variant=www ;;
+        *-frankenphp) variant=frankenphp ;;
+        *) variant=fpm ;;
+    esac
+    if [ "$variant" != www ]; then
         test "$(dpkg-query -W -f '\''${db:Status-Status}'\'' libvips-dev 2>/dev/null || true)" != installed
         vips --version
         vips black /tmp/test.v 8 8
@@ -31,18 +43,19 @@ docker run --rm --network none --read-only --tmpfs /tmp:exec --entrypoint sh "$1
             vipsheader "/tmp/test.$format"
         done
     fi
-    if [ "$1" = "8.5" ]; then
+    if [ "$variant" = fpm ]; then
         php-fpm -t
         caddy list-modules | grep -q http.encoders.br
     else
         frankenphp list-modules > /tmp/modules
         modules="frankenphp http.encoders.br"
-        if [ "$1" = "8.5-www" ]; then
+        if [ "$variant" = www ]; then
             modules="$modules http.authentication.providers.jwt http.handlers.rate_limit caddy.storage.redis"
         fi
         for module in $modules; do
             grep -qx "$module" /tmp/modules
         done
+        getcap /usr/local/bin/frankenphp | grep -q cap_net_bind_service
 
         # Exercise startup with no network and stub only the external commands.
         mkdir -p /tmp/bin /tmp/app

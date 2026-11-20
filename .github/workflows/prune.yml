@@ -16,3 +16,13 @@ jobs:
                     container: docker-symfony
                     dry-run: false
                     prune-untagged: true
+
+            - name: Prune old PR build caches
+              uses: vlaurin/action-ghcr-prune@v0.6.0
+              with:
+                    token: ${{ secrets.GITHUB_TOKEN }}
+                    organization: sctr
+                    container: docker-symfony
+                    dry-run: false
+                    keep-younger-than: 14
+                    prune-tags-regexes: ^buildcache-pr-

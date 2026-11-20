@@ -64,9 +64,11 @@ for downstream extension builds, and their existing PHP extensions. Removing fil
 inherited from a base image does not reclaim its layers; removing that toolchain or
 the original FrankenPHP binary requires a different runtime base.
 
-`8.5` and `8.5-frankenphp` retain libvips 8.18.2, but their shared installer removes newly installed build
-dependencies after preserving runtime libraries. This cleanup also applies to the
-other variants using `scripts/install-libvips.sh`.
+`8.5` and `8.5-frankenphp` build libvips 8.18.7 in a separate `debian:trixie-slim` stage
+(`scripts/build-libvips.sh`), so it compiles in parallel with the PHP extensions and stays
+cached when only the PHP base image changes. The final image copies `/usr/local` from that
+stage and installs only the runtime packages the stage recorded. The 8.6 and legacy
+variants still use `scripts/install-libvips.sh`.
 
 OPcache timestamp validation remains enabled for applications that update files in
 place. Immutable production deployments can add `opcache.validate_timestamps=0`
@@ -75,8 +77,11 @@ Set file descriptor limits at deployment time (for example, Docker's
 `--ulimit nofile=16384:16384`); a Dockerfile `RUN ulimit` does not persist them.
 
 CI validates pull requests without publishing images. Master builds publish images
-and a separate registry build cache per variant and architecture, including builder
-stages. To run the image smoke checks locally:
+and a registry build cache per variant and architecture (`buildcache-<variant>-<arch>`),
+including builder stages. Same-repo pull requests write their own cache
+(`buildcache-pr-<number>-<variant>-<arch>`), which the master build after the merge
+also reads, so it doesn't recompile the PR's changes. Fork PRs only read the cache, and
+PR caches older than 14 days are pruned. To run the image smoke checks locally:
 
 ```bash
 sh scripts/test-image.sh docker-symfony:8.5 8.5

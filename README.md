@@ -112,6 +112,10 @@ They mirror the 8.5 images (same ini files, entrypoints and Caddy modules), exce
   Switch back to the PECL releases, and restore `protobuf`, once
   releases support 8.6.
 
+- **`mbstring` is in `EXTENSIONS`:** the official PHP 8.6 images no longer compile it in
+  ([docker-library/php#1654](https://github.com/docker-library/php/pull/1654)). It keeps the
+  Oniguruma regex functions (`mb_ereg*`, `mb_split`), which PHP 8.6 deprecates.
+
 - Since PHP 8.6 the official `php` images are all built as ZTS with the embed SAPI, and the
   separate `-zts` tag no longer exists, so `8.6-frankenphp` and `8.6-www` are based on
   `php:8.6.*-cli-trixie`.

@@ -1,4 +1,13 @@
 # -----------------------------------------------------
+# libvips (built apart from PHP so it caches and compiles in parallel)
+# @see https://github.com/dooman87/imagemagick-docker/blob/main/Dockerfile.bookworm
+# -----------------------------------------------------
+FROM debian:trixie-slim AS libvips
+ARG VIPS_VERSION=8.18.7
+COPY --chmod=755 scripts/build-libvips.sh /tmp/build-libvips.sh
+RUN /tmp/build-libvips.sh ${VIPS_VERSION}
+
+# -----------------------------------------------------
 # FrankenPHP
 #------------------------------------------------------
 FROM dunglas/frankenphp:1.13.6-php8.5-trixie
@@ -34,14 +43,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install PHP extensions
 RUN set -eux; install-php-extensions $EXTENSIONS
 
-# Install latest libvips
-# @see https://github.com/dooman87/imagemagick-docker/blob/main/Dockerfile.bookworm
-ARG VIPS_VERSION=8.18.7
+# libvips from its own stage, plus the Debian packages it needs at runtime
 ENV LD_LIBRARY_PATH="/usr/local/lib"
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
 
-COPY --chmod=755 scripts/install-libvips.sh /tmp/install-libvips.sh
-RUN /tmp/install-libvips.sh ${VIPS_VERSION} && rm /tmp/install-libvips.sh
+COPY --link --from=libvips /usr/local/ /usr/local/
+COPY --from=libvips /vips-runtime-packages /tmp/vips-runtime-packages
+RUN apt-get update \
+	&& xargs -a /tmp/vips-runtime-packages apt-get install -y --no-install-recommends \
+	&& rm -rf /var/lib/apt/lists/* /tmp/vips-runtime-packages \
+	&& ldconfig
 
 # Keep frequently changing binaries and startup code after dependency installation.
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer

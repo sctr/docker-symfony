@@ -66,6 +66,7 @@ Note: `grpc` is no longer included in the 8.5 and 8.6 images.
 PHP 8.6 images: `protobuf` is excluded (no upstream code compiles on 8.6 yet); `apcu`,
 `igbinary` and `imagick` are built from pinned upstream commits, `amqp` from the `sctr/php-amqp` fork
 (`php-8.6-support`, same fix as upstream PR php-amqp/php-amqp#638) and `redis` via `scripts/install-phpredis.sh`.
+`mbstring` is in `EXTENSIONS` because the official PHP 8.6 images no longer compile it in.
 See the README's "PHP 8.6 images" section.
 
 ## CI/CD

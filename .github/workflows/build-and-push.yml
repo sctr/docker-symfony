@@ -6,9 +6,19 @@ on:
     pull_request:
     workflow_dispatch:
 
+permissions:
+    contents: read
+    packages: write
+    pull-requests: read
+
 env:
     REGISTRY: ghcr.io
     REGISTRY_IMAGE_NAME: ghcr.io/${{ github.repository }}
+    # Master writes the shared buildcache-<variant>-<arch> ref. Same-repo PRs write their own
+    # buildcache-pr-<number>-* ref, which the master build after the merge also reads.
+    # Fork PRs get a read-only token, so they only read the cache.
+    WRITE_CACHE: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    GH_TOKEN: ${{ github.token }}
 
 jobs:
     build-and-push-amd64:
@@ -29,7 +39,7 @@ jobs:
               uses: actions/checkout@v7
 
             - name: Login to GHCR
-              if: github.event_name != 'pull_request'
+              if: env.WRITE_CACHE == 'true'
               uses: docker/login-action@v4
               with:
                   registry: ${{ env.REGISTRY }}
@@ -42,14 +52,27 @@ jobs:
                   CACHE: ${{ env.REGISTRY_IMAGE_NAME }}:buildcache-${{ matrix.phpversion }}-amd64
               run: |
                   docker buildx create --use --driver docker-container
-                  cache_export=()
-                  if [ "${{ github.event_name }}" != "pull_request" ]; then
-                    cache_export=(--cache-to "type=registry,ref=$CACHE,mode=max")
+                  pr="${{ github.event.pull_request.number }}"
+                  if [ -z "$pr" ]; then
+                    # On master, find the PR this commit was merged from to reuse its cache.
+                    pr=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" --jq "map(select(.merge_commit_sha == \"$GITHUB_SHA\"))[0].number // empty" 2>/dev/null || true)
+                  fi
+                  pr_cache="${CACHE/buildcache-/buildcache-pr-$pr-}"
+                  cache_args=(--cache-from "type=registry,ref=$CACHE")
+                  if [ -n "$pr" ]; then
+                    cache_args+=(--cache-from "type=registry,ref=$pr_cache")
+                  fi
+                  if [ "$WRITE_CACHE" = true ]; then
+                    cache_ref="$CACHE"
+                    if [ "${{ github.event_name }}" = "pull_request" ]; then
+                      cache_ref="$pr_cache"
+                    fi
+                    # A refused cache upload (e.g. Dependabot's read-only token) must not fail the build.
+                    cache_args+=(--cache-to "type=registry,ref=$cache_ref,mode=max,ignore-error=true")
                   fi
                   docker buildx build --load \
                     --provenance=false \
-                    --cache-from "type=registry,ref=$CACHE" \
-                    "${cache_export[@]}" \
+                    "${cache_args[@]}" \
                     -f ${{ matrix.phpversion }}/Dockerfile \
                     -t "$IMAGE" .
                   sh scripts/test-image.sh "$IMAGE" "${{ matrix.phpversion }}"
@@ -75,7 +98,7 @@ jobs:
               uses: actions/checkout@v7
 
             - name: Login to GHCR
-              if: github.event_name != 'pull_request'
+              if: env.WRITE_CACHE == 'true'
               uses: docker/login-action@v4
               with:
                   registry: ${{ env.REGISTRY }}
@@ -88,14 +111,27 @@ jobs:
                   CACHE: ${{ env.REGISTRY_IMAGE_NAME }}:buildcache-${{ matrix.phpversion }}-arm64
               run: |
                   docker buildx create --use --driver docker-container
-                  cache_export=()
-                  if [ "${{ github.event_name }}" != "pull_request" ]; then
-                    cache_export=(--cache-to "type=registry,ref=$CACHE,mode=max")
+                  pr="${{ github.event.pull_request.number }}"
+                  if [ -z "$pr" ]; then
+                    # On master, find the PR this commit was merged from to reuse its cache.
+                    pr=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" --jq "map(select(.merge_commit_sha == \"$GITHUB_SHA\"))[0].number // empty" 2>/dev/null || true)
+                  fi
+                  pr_cache="${CACHE/buildcache-/buildcache-pr-$pr-}"
+                  cache_args=(--cache-from "type=registry,ref=$CACHE")
+                  if [ -n "$pr" ]; then
+                    cache_args+=(--cache-from "type=registry,ref=$pr_cache")
+                  fi
+                  if [ "$WRITE_CACHE" = true ]; then
+                    cache_ref="$CACHE"
+                    if [ "${{ github.event_name }}" = "pull_request" ]; then
+                      cache_ref="$pr_cache"
+                    fi
+                    # A refused cache upload (e.g. Dependabot's read-only token) must not fail the build.
+                    cache_args+=(--cache-to "type=registry,ref=$cache_ref,mode=max,ignore-error=true")
                   fi
                   docker buildx build --load \
                     --provenance=false \
-                    --cache-from "type=registry,ref=$CACHE" \
-                    "${cache_export[@]}" \
+                    "${cache_args[@]}" \
                     -f ${{ matrix.phpversion }}/Dockerfile \
                     -t "$IMAGE" .
                   sh scripts/test-image.sh "$IMAGE" "${{ matrix.phpversion }}"

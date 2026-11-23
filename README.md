@@ -14,9 +14,9 @@ docker pull ghcr.io/sctr/docker-symfony:{tag}
 
 | Tag | Base | Description |
 |-----|------|-------------|
-| `8.6` | Debian + PHP-FPM + Caddy | PHP 8.6 (RC) with Caddy reverse proxy, without protobuf (see below) |
-| `8.6-frankenphp` | FrankenPHP (built from source) | PHP 8.6 (RC) with FrankenPHP (single binary) (see below) |
-| `8.6-www` | FrankenPHP (built from source) + Custom Caddy | PHP 8.6 (RC) FrankenPHP with Caddy modules (ratelimit, redis, jwt), without protobuf (see below) |
+| `8.6` | Debian + PHP-FPM + Caddy | PHP 8.6 with Caddy reverse proxy, without protobuf (see below) |
+| `8.6-frankenphp` | FrankenPHP | PHP 8.6 with FrankenPHP (single binary), without protobuf (see below) |
+| `8.6-www` | FrankenPHP + Custom Caddy | PHP 8.6 FrankenPHP with Caddy modules (ratelimit, redis, jwt), without protobuf (see below) |
 | `8.5` | Debian + PHP-FPM + Caddy | PHP 8.5 with Caddy reverse proxy |
 | `8.5-frankenphp` | FrankenPHP | PHP 8.5 with FrankenPHP (single binary) |
 | `8.5-www` | FrankenPHP + Custom Caddy | PHP 8.5 FrankenPHP with Caddy modules (ratelimit, redis, jwt) |
@@ -116,15 +116,11 @@ They mirror the 8.5 images (same ini files, entrypoints and Caddy modules), exce
   ([docker-library/php#1654](https://github.com/docker-library/php/pull/1654)). It keeps the
   Oniguruma regex functions (`mb_ereg*`, `mb_split`), which PHP 8.6 deprecates.
 
-- Since PHP 8.6 the official `php` images are all built as ZTS with the embed SAPI, and the
-  separate `-zts` tag no longer exists, so `8.6-frankenphp` and `8.6-www` are based on
-  `php:8.6.*-cli-trixie`.
-- FrankenPHP does not publish PHP 8.6 images yet, so both FrankenPHP variants compile
-  FrankenPHP (`FRANKENPHP_VERSION`) and e-dant/watcher (`WATCHER_VERSION`) in a builder stage,
-  following the upstream FrankenPHP Dockerfile. `8.6-frankenphp` includes the same Caddy modules
-  as the upstream binary (Mercure, Vulcain, brotli). `8.6-www` adds the jwt, ratelimit and
-  redis storage modules through xcaddy, as `8.5-www` does. The builder stage sets the
-  `cap_net_bind_service` capability, which `COPY` keeps, so the binary is stored only once.
+- `8.6-frankenphp` and `8.6-www` are built like their 8.5 counterparts, on the official
+  `dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-trixie` images (FrankenPHP 1.14.0 is the
+  first release with PHP 8.6 images). `8.6-www` rebuilds the binary on the matching `-builder-` image
+  with xcaddy to add the jwt, ratelimit and redis storage modules. `8.6-frankenphp` builds libvips in
+  its own stage, like `8.5-frankenphp`.
 - The webp command-line tools (`cwebp`, `dwebp`, `gif2webp`, `img2webp`, `webpinfo`, `webpmux`) are
   unpacked from Debian's `webp` package without installing it: the package depends on OpenGL
   only for its `vwebp` viewer, which pulls in about 200 MB of Mesa and LLVM libraries. `vwebp` is

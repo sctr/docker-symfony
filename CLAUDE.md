@@ -33,9 +33,8 @@ Two types of images:
 
 2. **FrankenPHP** (directories: `8.4-frankenphp/`, `8.5-frankenphp/`, `8.5-www/`, `8.6-frankenphp/`, `8.6-www/`)
    - Single binary combining PHP and HTTP server
-   - Up to 8.5: uses the `dunglas/frankenphp` base image (`*-www` rebuilds the binary with extra Caddy modules)
-   - 8.6: no `dunglas/frankenphp` PHP 8.6 images exist, so FrankenPHP is compiled from source on
-     `php:8.6.*-cli-trixie` (all PHP 8.6 official images are ZTS; the `-zts` tag was dropped)
+   - Uses the `dunglas/frankenphp` base image (`*-www` rebuilds the binary with extra Caddy modules on the
+     matching `-builder-` image); PHP 8.6 images exist from FrankenPHP 1.14.0
    - Custom `docker-entrypoint.sh` for initialization
 
 ### Directory Structure Pattern

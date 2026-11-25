@@ -76,6 +76,10 @@ to an application INI file, provided they restart the container on every code ch
 Set file descriptor limits at deployment time (for example, Docker's
 `--ulimit nofile=16384:16384`); a Dockerfile `RUN ulimit` does not persist them.
 
+`zstd` is pinned to 0.18.0 in all active images: the 0.19.0 PECL package omits
+`zstd/lib/common/bmi2.h` from its bundled zstd 1.6.0 sources and does not compile. Unpin it once
+a fixed release is out.
+
 CI validates pull requests without publishing images. Master builds publish images
 and a registry build cache per variant and architecture (`buildcache-<variant>-<arch>`),
 including builder stages. Same-repo pull requests write their own cache
